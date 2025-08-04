@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema
+	xmlns:sbe="http://fixprotocol.io/2016/sbe"
+	package="com.codingmonster.common.sbe.admin" id="2" version="1"
+	semanticVersion="1.0.0">
+
+	<types>
+		<composite name="varStringEncoding">
+			<type name="length" primitiveType="uint16" semanticType="Length" />
+			<type name="varData" primitiveType="uint16" length="0"
+				characterEncoding="UTF-8" />
+		</composite>
+
+		<!-- Composite Header -->
+		<composite name="messageHeader"
+			description="SBE standard message header">
+			<type name="blockLength" primitiveType="uint16" />
+			<type name="templateId" primitiveType="uint16" />
+			<type name="schemaId" primitiveType="uint16" />
+			<type name="version" primitiveType="uint16" />
+		</composite>
+	</types>
+
+	<!-- Admin Messages -->
+	<sbe:message name="StartSession" id="1" blockLength="8">
+		<field name="timestamp" id="60" type="uint64" />
+	</sbe:message>
+
+	<sbe:message name="StopSession" id="2" blockLength="8">
+		<field name="timestamp" id="60" type="uint64" />
+	</sbe:message>
+
+	<sbe:message name="Heartbeat" id="3" blockLength="8">
+		<field name="timestamp" id="60" type="uint64" />
+	</sbe:message>
+
+	<sbe:message name="TestRequest" id="4" blockLength="16">
+		<data name="testReqID" id="112" type="varStringEncoding" />
+	</sbe:message>
+
+</sbe:messageSchema>

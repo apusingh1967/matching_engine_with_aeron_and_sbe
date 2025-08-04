@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = 'aeron_sbe_demo'
-include('matchingengine', 'client')
+include('matchingengine', 'client', 'common')

@@ -6,3 +6,6 @@ application {
   mainClass = 'com.codingmonster.client.Main'
 }
 
+dependencies {
+  implementation project(path: ':common')
+}

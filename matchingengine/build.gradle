@@ -3,6 +3,9 @@ plugins {
 }
 
 application {
-  mainClass = 'com.codingmonster.matchingengine.Main'
+  mainClass = 'com.codingmonster.client.Main'
 }
 
+dependencies {
+  implementation project(path: ':common')
+}
