@@ -8,4 +8,5 @@ application {
 
 dependencies {
   implementation project(path: ':common')
+  implementation 'net.openhft:affinity:3.23.3'
 }

@@ -73,6 +73,7 @@
 		<field name="timeInForce" id="8" type="TimeInForce" />
 		<field name="timestamp" id="9" type="uint64" />
 		<data name="symbol" id="55" type="varStringEncoding" />
+		<data name="senderCompID" id="49" type="varStringEncoding" />
 	</sbe:message>
 
 	<sbe:message name="OrderCancelReplaceRequest" id="2"
@@ -84,6 +85,7 @@
 		<field name="timeInForce" id="8" type="TimeInForce" />
 		<field name="timestamp" id="9" type="uint64" />
 		<data name="symbol" id="55" type="varStringEncoding" />
+		<data name="senderCompID" id="49" type="varStringEncoding" />
 	</sbe:message>
 
 	<sbe:message name="OrderCancelRequest" id="3"
@@ -92,6 +94,7 @@
 		<field name="clOrdID" id="11" type="uint64" />
 		<field name="timestamp" id="9" type="uint64" />
 		<data name="symbol" id="55" type="varStringEncoding" />
+		<data name="senderCompID" id="49" type="varStringEncoding" />
 	</sbe:message>
 
 	<sbe:message name="MarketDataRequest" id="4"
@@ -111,7 +114,7 @@
 	</sbe:message>
 
 	<sbe:message name="ExecutionReport" id="6" blockLength="48">
-		<field name="orderID" id="37" type="uint64" />
+		<field name="orderID" id="37" type="uint64" /> <!-- Exchange-generated -->
 		<field name="clOrdID" id="11" type="uint64" />
 		<field name="execID" id="17" type="uint64" />
 		<field name="execType" id="150" type="ExecType" />
@@ -119,6 +122,8 @@
 		<field name="filledQty" id="32" type="int32" />
 		<field name="leavesQty" id="151" type="int32" />
 		<field name="price" id="44" type="Price" />
+		<field name="senderCompID" id="49" type="varStringEncoding" />  <!-- Exchange -->
+		<field name="targetCompID" id="56" type="varStringEncoding" />  <!-- Trader -->
 	</sbe:message>
 
 	<sbe:message name="Reject" id="7" blockLength="24">

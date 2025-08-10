@@ -22,19 +22,19 @@
 	</types>
 
 	<!-- Admin Messages -->
-	<sbe:message name="StartSession" id="1" blockLength="8">
+	<sbe:message name="StartSession" id="101" blockLength="8">
 		<field name="timestamp" id="60" type="uint64" />
 	</sbe:message>
 
-	<sbe:message name="StopSession" id="2" blockLength="8">
+	<sbe:message name="StopSession" id="102" blockLength="8">
 		<field name="timestamp" id="60" type="uint64" />
 	</sbe:message>
 
-	<sbe:message name="Heartbeat" id="3" blockLength="8">
+	<sbe:message name="Heartbeat" id="103" blockLength="8">
 		<field name="timestamp" id="60" type="uint64" />
 	</sbe:message>
 
-	<sbe:message name="TestRequest" id="4" blockLength="16">
+	<sbe:message name="TestRequest" id="104" blockLength="16">
 		<data name="testReqID" id="112" type="varStringEncoding" />
 	</sbe:message>
 

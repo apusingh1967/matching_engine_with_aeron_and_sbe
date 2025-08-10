@@ -380,6 +380,68 @@ public final class ExecutionReportEncoder {
     return price;
   }
 
+  public static int senderCompIDId() {
+    return 49;
+  }
+
+  public static int senderCompIDSinceVersion() {
+    return 0;
+  }
+
+  public static int senderCompIDEncodingOffset() {
+    return 43;
+  }
+
+  public static int senderCompIDEncodingLength() {
+    return -1;
+  }
+
+  public static String senderCompIDMetaAttribute(final MetaAttribute metaAttribute) {
+    if (MetaAttribute.PRESENCE == metaAttribute) {
+      return "required";
+    }
+
+    return "";
+  }
+
+  private final VarStringEncodingEncoder senderCompID = new VarStringEncodingEncoder();
+
+  public VarStringEncodingEncoder senderCompID() {
+    senderCompID.wrap(buffer, offset + 43);
+    return senderCompID;
+  }
+
+  public static int targetCompIDId() {
+    return 56;
+  }
+
+  public static int targetCompIDSinceVersion() {
+    return 0;
+  }
+
+  public static int targetCompIDEncodingOffset() {
+    return -1;
+  }
+
+  public static int targetCompIDEncodingLength() {
+    return -1;
+  }
+
+  public static String targetCompIDMetaAttribute(final MetaAttribute metaAttribute) {
+    if (MetaAttribute.PRESENCE == metaAttribute) {
+      return "required";
+    }
+
+    return "";
+  }
+
+  private final VarStringEncodingEncoder targetCompID = new VarStringEncodingEncoder();
+
+  public VarStringEncodingEncoder targetCompID() {
+    targetCompID.wrap(buffer, offset + -1);
+    return targetCompID;
+  }
+
   public String toString() {
     if (null == buffer) {
       return "";

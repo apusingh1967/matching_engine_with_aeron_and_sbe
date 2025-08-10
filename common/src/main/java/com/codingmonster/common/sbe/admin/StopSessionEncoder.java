@@ -6,7 +6,7 @@ import org.agrona.MutableDirectBuffer;
 @SuppressWarnings("all")
 public final class StopSessionEncoder {
   public static final int BLOCK_LENGTH = 8;
-  public static final int TEMPLATE_ID = 2;
+  public static final int TEMPLATE_ID = 102;
   public static final int SCHEMA_ID = 2;
   public static final int SCHEMA_VERSION = 1;
   public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.LITTLE_ENDIAN;

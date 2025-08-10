@@ -315,6 +315,91 @@ public final class OrderCancelRequestDecoder {
     return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
   }
 
+  public static int senderCompIDId() {
+    return 49;
+  }
+
+  public static int senderCompIDSinceVersion() {
+    return 0;
+  }
+
+  public static String senderCompIDCharacterEncoding() {
+    return java.nio.charset.StandardCharsets.UTF_8.name();
+  }
+
+  public static String senderCompIDMetaAttribute(final MetaAttribute metaAttribute) {
+    if (MetaAttribute.PRESENCE == metaAttribute) {
+      return "required";
+    }
+
+    return "";
+  }
+
+  public static int senderCompIDHeaderLength() {
+    return 2;
+  }
+
+  public int senderCompIDLength() {
+    final int limit = parentMessage.limit();
+    return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+  }
+
+  public int skipSenderCompID() {
+    final int headerLength = 2;
+    final int limit = parentMessage.limit();
+    final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+    final int dataOffset = limit + headerLength;
+    parentMessage.limit(dataOffset + dataLength);
+
+    return dataLength;
+  }
+
+  public int getSenderCompID(final MutableDirectBuffer dst, final int dstOffset, final int length) {
+    final int headerLength = 2;
+    final int limit = parentMessage.limit();
+    final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+    final int bytesCopied = Math.min(length, dataLength);
+    parentMessage.limit(limit + headerLength + dataLength);
+    buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
+
+    return bytesCopied;
+  }
+
+  public int getSenderCompID(final byte[] dst, final int dstOffset, final int length) {
+    final int headerLength = 2;
+    final int limit = parentMessage.limit();
+    final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+    final int bytesCopied = Math.min(length, dataLength);
+    parentMessage.limit(limit + headerLength + dataLength);
+    buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
+
+    return bytesCopied;
+  }
+
+  public void wrapSenderCompID(final DirectBuffer wrapBuffer) {
+    final int headerLength = 2;
+    final int limit = parentMessage.limit();
+    final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+    parentMessage.limit(limit + headerLength + dataLength);
+    wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+  }
+
+  public String senderCompID() {
+    final int headerLength = 2;
+    final int limit = parentMessage.limit();
+    final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+    parentMessage.limit(limit + headerLength + dataLength);
+
+    if (0 == dataLength) {
+      return "";
+    }
+
+    final byte[] tmp = new byte[dataLength];
+    buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
+
+    return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
+  }
+
   public String toString() {
     if (null == buffer) {
       return "";
@@ -361,6 +446,9 @@ public final class OrderCancelRequestDecoder {
     builder.append('|');
     builder.append("symbol=");
     builder.append('\'').append(symbol()).append('\'');
+    builder.append('|');
+    builder.append("senderCompID=");
+    builder.append('\'').append(senderCompID()).append('\'');
 
     limit(originalLimit);
 
@@ -370,6 +458,7 @@ public final class OrderCancelRequestDecoder {
   public OrderCancelRequestDecoder sbeSkip() {
     sbeRewind();
     skipSymbol();
+    skipSenderCompID();
 
     return this;
   }

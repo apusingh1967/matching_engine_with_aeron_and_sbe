@@ -2,6 +2,7 @@ package com.codingmonster.client;
 
 import com.codingmonster.common.sbe.trade.MessageHeaderEncoder;
 import com.codingmonster.common.sbe.trade.NewOrderSingleEncoder;
+import com.codingmonster.common.sbe.trade.OrderType;
 import com.codingmonster.common.sbe.trade.Side;
 import io.aeron.Aeron;
 import io.aeron.Publication;
@@ -31,9 +32,11 @@ public class ClientTests {
 
       orderEncoder
           .wrapAndApplyHeader(buffer, offset, headerEncoder)
+              .senderCompID("trader1")
           .clOrdID(12345)
           .side(Side.Buy) // e.g., Buy
-          .orderQty(100);
+          .orderQty(100)
+          .orderType(OrderType.Limit);
       orderEncoder.price().exponent((byte) 5).mantissa(22345);
 
       int length = MessageHeaderEncoder.ENCODED_LENGTH + orderEncoder.encodedLength();

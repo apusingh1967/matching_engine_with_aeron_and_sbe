@@ -280,6 +280,76 @@ public final class OrderCancelRequestEncoder {
     return this;
   }
 
+  public static int senderCompIDId() {
+    return 49;
+  }
+
+  public static String senderCompIDCharacterEncoding() {
+    return java.nio.charset.StandardCharsets.UTF_8.name();
+  }
+
+  public static String senderCompIDMetaAttribute(final MetaAttribute metaAttribute) {
+    if (MetaAttribute.PRESENCE == metaAttribute) {
+      return "required";
+    }
+
+    return "";
+  }
+
+  public static int senderCompIDHeaderLength() {
+    return 2;
+  }
+
+  public OrderCancelRequestEncoder putSenderCompID(
+      final DirectBuffer src, final int srcOffset, final int length) {
+    if (length > 65534) {
+      throw new IllegalStateException("length > maxValue for type: " + length);
+    }
+
+    final int headerLength = 2;
+    final int limit = parentMessage.limit();
+    parentMessage.limit(limit + headerLength + length);
+    buffer.putShort(limit, (short) length, java.nio.ByteOrder.LITTLE_ENDIAN);
+    buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+    return this;
+  }
+
+  public OrderCancelRequestEncoder putSenderCompID(
+      final byte[] src, final int srcOffset, final int length) {
+    if (length > 65534) {
+      throw new IllegalStateException("length > maxValue for type: " + length);
+    }
+
+    final int headerLength = 2;
+    final int limit = parentMessage.limit();
+    parentMessage.limit(limit + headerLength + length);
+    buffer.putShort(limit, (short) length, java.nio.ByteOrder.LITTLE_ENDIAN);
+    buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+    return this;
+  }
+
+  public OrderCancelRequestEncoder senderCompID(final String value) {
+    final byte[] bytes =
+        (null == value || value.isEmpty())
+            ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY
+            : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+
+    final int length = bytes.length;
+    if (length > 65534) {
+      throw new IllegalStateException("length > maxValue for type: " + length);
+    }
+
+    final int headerLength = 2;
+    final int limit = parentMessage.limit();
+    parentMessage.limit(limit + headerLength + length);
+    buffer.putShort(limit, (short) length, java.nio.ByteOrder.LITTLE_ENDIAN);
+    buffer.putBytes(limit + headerLength, bytes, 0, length);
+
+    return this;
+  }
+
   public String toString() {
     if (null == buffer) {
       return "";
