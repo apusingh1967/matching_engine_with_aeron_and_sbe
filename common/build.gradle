@@ -40,4 +40,3 @@ tasks.register('generateAdminMessages', JavaExec) {
             'src/main/resources/com/codingmonster/common/admin-messages.xml'
     ]
 }
-

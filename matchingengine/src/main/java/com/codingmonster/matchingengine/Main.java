@@ -43,7 +43,7 @@ public class Main {
             .dirDeleteOnStart(true); // Optional: clean dir on start
     latch = new CountDownLatch(1); // only one thread so far
 
-    try (MediaDriver ignore = MediaDriver.launchEmbedded(context)) {
+   // try (MediaDriver ignore = MediaDriver.launchEmbedded(context)) {
       for (int i = 0; i < 1; i++) {
         final int core = i;
         new Thread(
@@ -66,7 +66,7 @@ public class Main {
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
-    }
+  //  }
   }
 
   public Main(String path) {
@@ -93,45 +93,46 @@ public class Main {
             int subStreamId = Integer.parseInt(vals[1]);
             String pubChannel = vals[2];
             int pubStreamId = Integer.parseInt(vals[3]);
-
-            this.subscriptions.add(aeron.addSubscription(subChannel, subStreamId));
+            Subscription subscription = aeron.addSubscription(subChannel, subStreamId);
+            LOG.info("Subscribed to: " + subChannel + ", " + subStreamId);
+            this.subscriptions.add(subscription);
             this.publications.put(trader, aeron.addPublication(pubChannel, pubStreamId));
             LOG.info(String.format("Matching Engine Instance Ready for: %s %s", path, trader));
           });
-    }
 
     while (started.get()) {
       FragmentHandler handler =
-          (buffer, offset, length, header) -> {
-            // Decode header
-            MessageHeaderDecoder headerDecoder = new MessageHeaderDecoder();
-            headerDecoder.wrap(buffer, offset); // will read only header from buffer
-            offset += MessageHeaderDecoder.ENCODED_LENGTH;
+              (buffer, offset, length, header) -> {
+                // Decode header
+                MessageHeaderDecoder headerDecoder = new MessageHeaderDecoder();
+                headerDecoder.wrap(buffer, offset); // will read only header from buffer
+                offset += MessageHeaderDecoder.ENCODED_LENGTH;
 
-            int templateId = headerDecoder.templateId();
-            switch (templateId) {
-              case NewOrderSingleDecoder.TEMPLATE_ID:
-                processNewOrderSingle(buffer, offset, headerDecoder);
-                break;
-              case OrderCancelReplaceRequestDecoder.TEMPLATE_ID:
-                break;
-              case OrderCancelRequestDecoder.TEMPLATE_ID:
-                break;
-              case StopSessionDecoder.TEMPLATE_ID:
-                this.started.set(false);
-                break;
-              default:
-                LOG.error("Unknown message with templateId: " + templateId);
-            }
-          };
+                int templateId = headerDecoder.templateId();
+                switch (templateId) {
+                  case NewOrderSingleDecoder.TEMPLATE_ID:
+                    processNewOrderSingle(buffer, offset, headerDecoder);
+                    break;
+                  case OrderCancelReplaceRequestDecoder.TEMPLATE_ID:
+                    break;
+                  case OrderCancelRequestDecoder.TEMPLATE_ID:
+                    break;
+                  case StopSessionDecoder.TEMPLATE_ID:
+                    this.started.set(false);
+                    break;
+                  default:
+                    LOG.error("Unknown message with templateId: " + templateId);
+                }
+              };
 
       // Poll from the subscription
       for (Subscription subscription : subscriptions) {
         int ignore = subscription.poll(handler, 1);
       }
-      Thread.yield();
     }
-    latch.countDown();
+      // Thread.yield();
+    }
+   // latch.countDown();
   }
 
   private void processNewOrderSingle(

@@ -1,23 +1,27 @@
 package com.codingmonster.client;
 
-import com.codingmonster.common.sbe.trade.MessageHeaderEncoder;
-import com.codingmonster.common.sbe.trade.NewOrderSingleEncoder;
-import com.codingmonster.common.sbe.trade.OrderType;
-import com.codingmonster.common.sbe.trade.Side;
+import com.codingmonster.common.sbe.trade.*;
 import io.aeron.Aeron;
 import io.aeron.Publication;
 import java.nio.ByteBuffer;
+
+import io.aeron.Subscription;
+import io.aeron.logbuffer.FragmentHandler;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ClientTests {
+
+  private Logger LOG = LoggerFactory.getLogger(this.getClass());
   @Test
   public void given_sell_and_matched_buy_then_filled_er() {
     Aeron.Context ctx =
         new Aeron.Context()
             .aeronDirectoryName("/tmp/aeron"); // match the name with server process if using IPC
     try (Aeron aeron = Aeron.connect(ctx)) {
-      Publication publication = aeron.addPublication("aeron:ipc", 10);
+      Publication publication = aeron.addPublication("aeron:ipc", 11);
       // "aeron:udp?endpoint=localhost:40123"
 
       // Prepare a direct buffer to write the message into
@@ -42,10 +46,39 @@ public class ClientTests {
       int length = MessageHeaderEncoder.ENCODED_LENGTH + orderEncoder.encodedLength();
 
       // Send the message over Aeron
+      LOG.info("Publishing to: " + publication.toString());
       long result = publication.offer(buffer, offset, length);
       if (result < 0) {
         System.err.println("Offer failed: " + result);
       }
+      Subscription subscription = aeron.addSubscription("aeron:ipc", 10);
+      processMessage(subscription);
     }
+  }
+
+  private void processMessage(Subscription subscription) {
+    FragmentHandler handler =
+            (buffer, offset, length, header) -> {
+              // Decode header
+              MessageHeaderDecoder headerDecoder = new MessageHeaderDecoder();
+              headerDecoder.wrap(buffer, offset); // will read only header from buffer
+              offset += MessageHeaderDecoder.ENCODED_LENGTH;
+
+              int templateId = headerDecoder.templateId();
+              switch (templateId) {
+                case ExecutionReportDecoder.TEMPLATE_ID:
+                  ExecutionReportDecoder executionReportDecoder = new ExecutionReportDecoder();
+                  executionReportDecoder.wrap(
+                          buffer,
+                          offset + MessageHeaderDecoder.ENCODED_LENGTH,
+                          headerDecoder.blockLength(),
+                          headerDecoder.version());
+                  System.out.println(executionReportDecoder.senderCompID());
+                  break;
+                default:
+                  LOG.error("Unknown message with templateId: " + templateId);
+              }
+            };
+    subscription.poll(handler, 1);
   }
 }

@@ -10,3 +10,23 @@ dependencies {
   implementation project(path: ':common')
   implementation 'net.openhft:affinity:3.23.3'
 }
+
+tasks.register('runMediaDriver', JavaExec) {
+  group = 'Aeron'
+  description = 'Start Aeron MediaDriver with verbose logging'
+
+  classpath = sourceSets.main.runtimeClasspath
+  mainClass = 'io.aeron.driver.MediaDriver'
+
+  jvmArgs = [
+          '--add-opens=java.base/sun.nio.ch=ALL-UNNAMED',
+          '-Daeron.dir=/tmp/aeron',           // 👈 custom directory
+          '-Daeron.dir.delete.on.start=true',     // Clean old Aeron dir
+          '-Daeron.print.configuration=true',    // Print driver config on startup
+          '-Daeron.driver.debug.timeout=true',   // More timeout debug info
+          '-Daeron.driver.timeout=10000',        // Example: set timeout
+          '-Daeron.term.buffer.sparse.file=false',// Example: force non-sparse
+          '-Daeron.verbose=true',                 // Enable verbose driver logging
+          '-Daeron.event.log=true'
+  ]
+}
