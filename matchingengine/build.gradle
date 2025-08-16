@@ -3,12 +3,16 @@ plugins {
 }
 
 application {
-  mainClass = 'com.codingmonster.client.Main'
+  mainClass = 'com.codingmonster.matchingengine.Main'
 }
 
 dependencies {
   implementation project(path: ':common')
   implementation 'net.openhft:affinity:3.23.3'
+}
+
+tasks.test {
+  useJUnitPlatform()
 }
 
 tasks.register('runMediaDriver', JavaExec) {
@@ -18,15 +22,17 @@ tasks.register('runMediaDriver', JavaExec) {
   classpath = sourceSets.main.runtimeClasspath
   mainClass = 'io.aeron.driver.MediaDriver'
 
+  // may need to change to %userprofile% for windows?
+  def aeronDir = System.getProperty('user.home') + '/aeron'
   jvmArgs = [
           '--add-opens=java.base/sun.nio.ch=ALL-UNNAMED',
-          '-Daeron.dir=/tmp/aeron',           // 👈 custom directory
+          '-Daeron.dir=' + aeronDir,           // 👈 custom directory
           '-Daeron.dir.delete.on.start=true',     // Clean old Aeron dir
           '-Daeron.print.configuration=true',    // Print driver config on startup
           '-Daeron.driver.debug.timeout=true',   // More timeout debug info
           '-Daeron.driver.timeout=10000',        // Example: set timeout
           '-Daeron.term.buffer.sparse.file=false',// Example: force non-sparse
-          '-Daeron.verbose=true',                 // Enable verbose driver logging
+          '-Daeron.verbose=true',                 // Enable verbose driver logging for startup debugging
           '-Daeron.event.log=true'
   ]
 }

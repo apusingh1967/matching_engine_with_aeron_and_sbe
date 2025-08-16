@@ -25,10 +25,11 @@ subprojects {
         useJUnitPlatform() // Very important to enable JUnit Jupiter
     }
 
+    def aeronDir = System.getProperty('user.home') + '/aeron'
     plugins.withId('application') {
     applicationDefaultJvmArgs = [
       "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
-      "-Daeron.dir=/tmp/aeron"
+      "-Daeron.dir=" + aeronDir
     ]
   }
 

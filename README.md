@@ -8,7 +8,8 @@ This repository demonstrates how to use [Aeron](https://aeron.io/) and [SBE](htt
 - ✅ Set up **Initiator** (client) and **Acceptor** (server)
 - ✅ Send/receive FIX messages over TCP/IP
 - ✅ Use standard FIX fields and custom fields
-- ✅ Load session settings from `.cfg` files
+
+![img.png](img.png)
 
 #### AffinityLock
 
@@ -128,3 +129,18 @@ Your matching engine thread is the only thing that runs there.
 No other user processes, no kernel housekeeping, no random cron jobs.
 
 The cache, branch predictors, TLB — all stay “warm” with your code and data.
+
+#### Start Media Driver
+curl -O https://repo1.maven.org/maven2/io/aeron/aeron-all/1.44.0/aeron-all-1.44.0.jar
+
+java \
+--add-opens=java.base/sun.nio.ch=ALL-UNNAMED \
+-Daeron.dir=/tmp/aeron \
+-Daeron.dir.delete.on.start=true \
+-Daeron.print.configuration=true \
+-Daeron.event.log=true \
+-Daeron.client.liveness.timeout=10000000000 \
+-Daeron.driver.timeout=60000 \
+-cp aeron-all-1.44.0.jar io.aeron.driver.MediaDriver
+
+
