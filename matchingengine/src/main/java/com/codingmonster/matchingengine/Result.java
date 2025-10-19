@@ -6,6 +6,7 @@ import com.codingmonster.common.sbe.trade.Side;
 
 public class Result {
   final int clOrdId; // client order ID
+  final String senderCompID;
   final String execId; // unique per execution event
   final Side side;
   final ExecType execType; // FIX ExecType
@@ -19,6 +20,7 @@ public class Result {
 
   public Result(
       int clOrdId,
+      String senderCompID,
       String execId,
       Side side,
       ExecType execType,
@@ -30,6 +32,7 @@ public class Result {
       long avgPx,
       long transactTime) {
     this.clOrdId = clOrdId;
+    this.senderCompID = senderCompID;
     this.execId = execId;
     this.side = side;
     this.execType = execType;

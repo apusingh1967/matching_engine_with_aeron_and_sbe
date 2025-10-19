@@ -30,8 +30,9 @@
 		<field name="timestamp" id="60" type="uint64" />
 	</sbe:message>
 
-	<sbe:message name="Heartbeat" id="103" blockLength="8">
-		<field name="timestamp" id="60" type="uint64" />
+	<sbe:message name="Heartbeat" id="99" description="Keepalive message from matching engine or trader" blockLength="16">
+		<field name="senderCompID" id="49" type="varStringEncoding" />  <!-- e.g. ME or Trader -->
+		<field name="timestamp" id="52" type="uint64" />                <!-- Epoch nanos -->
 	</sbe:message>
 
 	<sbe:message name="TestRequest" id="104" blockLength="16">

@@ -27,6 +27,9 @@ public class Main {
   // none of these following fields is thread safe
   // but we are going single thread, and plan to scale using thread per shard of instruments
 
+  private final MatchingEngine matchingEngine;
+  private final OrderIdGenerator orderIdGenerator;
+
   // Single subscription to channel where all trade requests received
   private final Subscription subscription;
 
@@ -70,13 +73,13 @@ public class Main {
 
     // try (MediaDriver ignore = MediaDriver.launchEmbedded(context)) {
     //    for (int i = 0; i < 1; i++) {
-    //      final int core = i;
+          final int core = 0;
     // CPU affinity with core. In hyperthreading, will try to affinity one thread per
     // core, and when all used, then move to use hyperthreaded twin
     // does not work on ARM, uncomment on x64 for thread affinity
     // try (AffinityLock lock = AffinityLock.acquireLock(core)) {
     //  }
-    Thread t = new Thread(Main::new);
+    Thread t = new Thread(() -> new Main(core));
     t.setDaemon(true);
     t.start();
     //    }
@@ -89,7 +92,9 @@ public class Main {
     //  }
   }
 
-  public Main() {
+  public Main(int core) {
+    this.matchingEngine = new MatchingEngine();
+    this.orderIdGenerator = new OrderIdGenerator(core);
     // not thread safe, create in each thread
     MediaDriver.Context context =
         new MediaDriver.Context()
@@ -138,10 +143,13 @@ public class Main {
                     processNewOrderSingle(buffer, offset, messageHeaderDecoder);
                     break;
                   case OrderCancelReplaceRequestDecoder.TEMPLATE_ID:
+                    // TODO order modify
                     break;
                   case OrderCancelRequestDecoder.TEMPLATE_ID:
+                    // TODO order cancel
                     break;
                   case StopSessionDecoder.TEMPLATE_ID:
+                    // admin message to shutdown ME
                     latch.countDown();
                     break;
                   default:
@@ -171,9 +179,7 @@ public class Main {
     var senderCompID = newOrderSingleDecoder.senderCompID();
     long clOrdID = newOrderSingleDecoder.clOrdID();
     Side side =
-        newOrderSingleDecoder.side().equals(com.codingmonster.common.sbe.trade.Side.Buy)
-            ? Side.Buy
-            : Side.Sell;
+        newOrderSingleDecoder.side();
     int qty = newOrderSingleDecoder.orderQty();
     PriceDecoder price = newOrderSingleDecoder.price();
     long timestamp = newOrderSingleDecoder.timestamp();
@@ -186,16 +192,20 @@ public class Main {
         price,
         timestamp);
 
-    if (newOrderSingleDecoder.orderType().equals(OrderType.Limit)) {
-      // TODO support for limit orders planned in future
-    } else if (newOrderSingleDecoder.orderType().equals(OrderType.Market)) {
-      sendExecutionReport(senderCompID);
+    if (newOrderSingleDecoder.orderType().equals(OrderType.Limit)
+            || (newOrderSingleDecoder.orderType().equals(OrderType.Market))) {
+      Order order = new Order(this.orderIdGenerator.nextId(), newOrderSingleDecoder.clOrdID(), newOrderSingleDecoder.symbol(),
+              newOrderSingleDecoder.price().mantissa(), newOrderSingleDecoder.orderQty(), newOrderSingleDecoder.side(), newOrderSingleDecoder.timestamp());
+      List<Result>results = matchingEngine.match(order);
+      for(Result result: results) {
+        sendExecutionReport(result);
+      }
     } else {
       LOG.warn("Order type not supported: " + newOrderSingleDecoder.orderType());
     }
   }
 
-  private void sendExecutionReport(String senderCompID) {
+  private void sendExecutionReport(Result result) {
     // 1. Wrap a buffer at offset 0 for header + message
     // for single message, offset = 0 is good enough
     // for multiple, offset needs to be updated with message length
@@ -204,13 +214,13 @@ public class Main {
     // 3. Encode your ExecutionReport payload right after header
     executionReportEncoder.wrapAndApplyHeader(this.publishBuffer, offset, messageHeaderEncoder);
     executionReportEncoder
-        .clOrdID(121)
-        .execType(ExecType.Fill)
-        .ordStatus(OrdStatus.Filled)
-        .filledQty(12)
-        .leavesQty(8);
-    executionReportEncoder.senderCompID().appendTo(new StringBuilder("exchange"));
-    executionReportEncoder.price().exponent((byte) 3).mantissa(12345);
+        .clOrdID(result.clOrdId)
+        .execType(result.execType)
+        .ordStatus(result.ordStatus)
+        .filledQty(result.cumQty)
+        .leavesQty(result.leavesQty);
+    executionReportEncoder.senderCompID().appendTo(new StringBuilder(result.senderCompID));
+    executionReportEncoder.price().exponent((byte) -2).mantissa(result.lastPx);
 
     // 4. Calculate total length = header + payload
     //    Unlike something like ByteBuffer.flip() in NIO, Aeron doesn’t know how much of your buffer
@@ -221,24 +231,24 @@ public class Main {
     //    That’s why you calculate the exact length manually.
     int length = messageHeaderEncoder.encodedLength() + executionReportEncoder.encodedLength();
 
-    Publication publication = publications.get(senderCompID);
+    Publication publication = publications.get(result.senderCompID);
     // 5. Send via Aeron
-    long result;
+    long newStreamPosition;
     do {
-      result = publication.offer(this.publishBuffer, offset, length);
-      if (result < 0) {
-        if (result == Publication.BACK_PRESSURED) {
-          System.out.println("Back pressured");
-        } else if (result == Publication.NOT_CONNECTED) {
-          System.out.println("Not connected");
-        } else if (result == Publication.ADMIN_ACTION) {
-          System.out.println("Admin action");
+      newStreamPosition = publication.offer(this.publishBuffer, offset, length);
+      if (newStreamPosition < 0) {
+        if (newStreamPosition == Publication.BACK_PRESSURED) {
+          LOG.warn("Back pressured");
+        } else if (newStreamPosition == Publication.NOT_CONNECTED) {
+          LOG.warn("Not connected");
+        } else if (newStreamPosition == Publication.ADMIN_ACTION) {
+          LOG.warn("Admin action");
         } else {
-          System.out.println("Unknown error " + result);
+          LOG.warn("Unknown error " + newStreamPosition);
         }
       } else {
-        System.out.println("Message sent at position " + result);
+        LOG.info("Message sent at position " + newStreamPosition);
       }
-    } while (result <= 0);
+    } while (newStreamPosition <= 0);
   }
 }
