@@ -172,8 +172,8 @@ public class Main {
     long clOrdID = newOrderSingleDecoder.clOrdID();
     Side side =
         newOrderSingleDecoder.side().equals(com.codingmonster.common.sbe.trade.Side.Buy)
-            ? Side.BUY
-            : Side.SELL;
+            ? Side.Buy
+            : Side.Sell;
     int qty = newOrderSingleDecoder.orderQty();
     PriceDecoder price = newOrderSingleDecoder.price();
     long timestamp = newOrderSingleDecoder.timestamp();
@@ -219,7 +219,7 @@ public class Main {
     //    So unless you track how much data was written, Aeron has no clue what your message
     // boundaries are.
     //    That’s why you calculate the exact length manually.
-    int length = MessageHeaderEncoder.ENCODED_LENGTH + executionReportEncoder.encodedLength();
+    int length = messageHeaderEncoder.encodedLength() + executionReportEncoder.encodedLength();
 
     Publication publication = publications.get(senderCompID);
     // 5. Send via Aeron

@@ -1,13 +1,16 @@
 package com.codingmonster.matchingengine;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MatchingEngine {
 
-  private Map<String, OrderBook> books = new HashMap<>();
+  // instrument id to order book
+  private final Map<String, OrderBook> books = new HashMap<>();
 
-  Result match(Order order) {
-    return null;
+  List<Result> match(Order order) {
+    OrderBook book = books.get(order.instrumentId);
+    return book.match(order);
   }
 }

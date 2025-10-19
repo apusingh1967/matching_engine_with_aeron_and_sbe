@@ -229,6 +229,38 @@ public final class ExecutionReportDecoder {
     return buffer.getLong(offset + 16, java.nio.ByteOrder.LITTLE_ENDIAN);
   }
 
+  public static int sideId() {
+    return 54;
+  }
+
+  public static int sideSinceVersion() {
+    return 0;
+  }
+
+  public static int sideEncodingOffset() {
+    return 24;
+  }
+
+  public static int sideEncodingLength() {
+    return 1;
+  }
+
+  public static String sideMetaAttribute(final MetaAttribute metaAttribute) {
+    if (MetaAttribute.PRESENCE == metaAttribute) {
+      return "required";
+    }
+
+    return "";
+  }
+
+  public short sideRaw() {
+    return ((short) (buffer.getByte(offset + 24) & 0xFF));
+  }
+
+  public Side side() {
+    return Side.get(((short) (buffer.getByte(offset + 24) & 0xFF)));
+  }
+
   public static int execTypeId() {
     return 150;
   }
@@ -238,7 +270,7 @@ public final class ExecutionReportDecoder {
   }
 
   public static int execTypeEncodingOffset() {
-    return 24;
+    return 25;
   }
 
   public static int execTypeEncodingLength() {
@@ -254,11 +286,11 @@ public final class ExecutionReportDecoder {
   }
 
   public short execTypeRaw() {
-    return ((short) (buffer.getByte(offset + 24) & 0xFF));
+    return ((short) (buffer.getByte(offset + 25) & 0xFF));
   }
 
   public ExecType execType() {
-    return ExecType.get(((short) (buffer.getByte(offset + 24) & 0xFF)));
+    return ExecType.get(((short) (buffer.getByte(offset + 25) & 0xFF)));
   }
 
   public static int ordStatusId() {
@@ -270,7 +302,7 @@ public final class ExecutionReportDecoder {
   }
 
   public static int ordStatusEncodingOffset() {
-    return 25;
+    return 26;
   }
 
   public static int ordStatusEncodingLength() {
@@ -286,11 +318,11 @@ public final class ExecutionReportDecoder {
   }
 
   public short ordStatusRaw() {
-    return ((short) (buffer.getByte(offset + 25) & 0xFF));
+    return ((short) (buffer.getByte(offset + 26) & 0xFF));
   }
 
   public OrdStatus ordStatus() {
-    return OrdStatus.get(((short) (buffer.getByte(offset + 25) & 0xFF)));
+    return OrdStatus.get(((short) (buffer.getByte(offset + 26) & 0xFF)));
   }
 
   public static int filledQtyId() {
@@ -302,7 +334,7 @@ public final class ExecutionReportDecoder {
   }
 
   public static int filledQtyEncodingOffset() {
-    return 26;
+    return 27;
   }
 
   public static int filledQtyEncodingLength() {
@@ -330,7 +362,7 @@ public final class ExecutionReportDecoder {
   }
 
   public int filledQty() {
-    return buffer.getInt(offset + 26, java.nio.ByteOrder.LITTLE_ENDIAN);
+    return buffer.getInt(offset + 27, java.nio.ByteOrder.LITTLE_ENDIAN);
   }
 
   public static int leavesQtyId() {
@@ -342,7 +374,7 @@ public final class ExecutionReportDecoder {
   }
 
   public static int leavesQtyEncodingOffset() {
-    return 30;
+    return 31;
   }
 
   public static int leavesQtyEncodingLength() {
@@ -370,7 +402,7 @@ public final class ExecutionReportDecoder {
   }
 
   public int leavesQty() {
-    return buffer.getInt(offset + 30, java.nio.ByteOrder.LITTLE_ENDIAN);
+    return buffer.getInt(offset + 31, java.nio.ByteOrder.LITTLE_ENDIAN);
   }
 
   public static int priceId() {
@@ -382,7 +414,7 @@ public final class ExecutionReportDecoder {
   }
 
   public static int priceEncodingOffset() {
-    return 34;
+    return 35;
   }
 
   public static int priceEncodingLength() {
@@ -400,7 +432,7 @@ public final class ExecutionReportDecoder {
   private final PriceDecoder price = new PriceDecoder();
 
   public PriceDecoder price() {
-    price.wrap(buffer, offset + 34);
+    price.wrap(buffer, offset + 35);
     return price;
   }
 
@@ -413,7 +445,7 @@ public final class ExecutionReportDecoder {
   }
 
   public static int senderCompIDEncodingOffset() {
-    return 43;
+    return 44;
   }
 
   public static int senderCompIDEncodingLength() {
@@ -431,7 +463,7 @@ public final class ExecutionReportDecoder {
   private final VarStringEncodingDecoder senderCompID = new VarStringEncodingDecoder();
 
   public VarStringEncodingDecoder senderCompID() {
-    senderCompID.wrap(buffer, offset + 43);
+    senderCompID.wrap(buffer, offset + 44);
     return senderCompID;
   }
 
@@ -509,6 +541,9 @@ public final class ExecutionReportDecoder {
     builder.append('|');
     builder.append("execID=");
     builder.append(this.execID());
+    builder.append('|');
+    builder.append("side=");
+    builder.append(this.side());
     builder.append('|');
     builder.append("execType=");
     builder.append(this.execType());

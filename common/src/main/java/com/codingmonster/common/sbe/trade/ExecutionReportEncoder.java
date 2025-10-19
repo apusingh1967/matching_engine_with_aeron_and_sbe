@@ -209,6 +209,35 @@ public final class ExecutionReportEncoder {
     return this;
   }
 
+  public static int sideId() {
+    return 54;
+  }
+
+  public static int sideSinceVersion() {
+    return 0;
+  }
+
+  public static int sideEncodingOffset() {
+    return 24;
+  }
+
+  public static int sideEncodingLength() {
+    return 1;
+  }
+
+  public static String sideMetaAttribute(final MetaAttribute metaAttribute) {
+    if (MetaAttribute.PRESENCE == metaAttribute) {
+      return "required";
+    }
+
+    return "";
+  }
+
+  public ExecutionReportEncoder side(final Side value) {
+    buffer.putByte(offset + 24, (byte) value.value());
+    return this;
+  }
+
   public static int execTypeId() {
     return 150;
   }
@@ -218,7 +247,7 @@ public final class ExecutionReportEncoder {
   }
 
   public static int execTypeEncodingOffset() {
-    return 24;
+    return 25;
   }
 
   public static int execTypeEncodingLength() {
@@ -234,7 +263,7 @@ public final class ExecutionReportEncoder {
   }
 
   public ExecutionReportEncoder execType(final ExecType value) {
-    buffer.putByte(offset + 24, (byte) value.value());
+    buffer.putByte(offset + 25, (byte) value.value());
     return this;
   }
 
@@ -247,7 +276,7 @@ public final class ExecutionReportEncoder {
   }
 
   public static int ordStatusEncodingOffset() {
-    return 25;
+    return 26;
   }
 
   public static int ordStatusEncodingLength() {
@@ -263,7 +292,7 @@ public final class ExecutionReportEncoder {
   }
 
   public ExecutionReportEncoder ordStatus(final OrdStatus value) {
-    buffer.putByte(offset + 25, (byte) value.value());
+    buffer.putByte(offset + 26, (byte) value.value());
     return this;
   }
 
@@ -276,7 +305,7 @@ public final class ExecutionReportEncoder {
   }
 
   public static int filledQtyEncodingOffset() {
-    return 26;
+    return 27;
   }
 
   public static int filledQtyEncodingLength() {
@@ -304,7 +333,7 @@ public final class ExecutionReportEncoder {
   }
 
   public ExecutionReportEncoder filledQty(final int value) {
-    buffer.putInt(offset + 26, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+    buffer.putInt(offset + 27, value, java.nio.ByteOrder.LITTLE_ENDIAN);
     return this;
   }
 
@@ -317,7 +346,7 @@ public final class ExecutionReportEncoder {
   }
 
   public static int leavesQtyEncodingOffset() {
-    return 30;
+    return 31;
   }
 
   public static int leavesQtyEncodingLength() {
@@ -345,7 +374,7 @@ public final class ExecutionReportEncoder {
   }
 
   public ExecutionReportEncoder leavesQty(final int value) {
-    buffer.putInt(offset + 30, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+    buffer.putInt(offset + 31, value, java.nio.ByteOrder.LITTLE_ENDIAN);
     return this;
   }
 
@@ -358,7 +387,7 @@ public final class ExecutionReportEncoder {
   }
 
   public static int priceEncodingOffset() {
-    return 34;
+    return 35;
   }
 
   public static int priceEncodingLength() {
@@ -376,7 +405,7 @@ public final class ExecutionReportEncoder {
   private final PriceEncoder price = new PriceEncoder();
 
   public PriceEncoder price() {
-    price.wrap(buffer, offset + 34);
+    price.wrap(buffer, offset + 35);
     return price;
   }
 
@@ -389,7 +418,7 @@ public final class ExecutionReportEncoder {
   }
 
   public static int senderCompIDEncodingOffset() {
-    return 43;
+    return 44;
   }
 
   public static int senderCompIDEncodingLength() {
@@ -407,7 +436,7 @@ public final class ExecutionReportEncoder {
   private final VarStringEncodingEncoder senderCompID = new VarStringEncodingEncoder();
 
   public VarStringEncodingEncoder senderCompID() {
-    senderCompID.wrap(buffer, offset + 43);
+    senderCompID.wrap(buffer, offset + 44);
     return senderCompID;
   }
 

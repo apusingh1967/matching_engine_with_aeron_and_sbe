@@ -7,9 +7,13 @@ public enum ExecType {
 
   Fill((short) 5),
 
-  Cancel((short) 6),
+  PartialFill((short) 6),
 
-  Reject((short) 7),
+  Cancel((short) 7),
+
+  Reject((short) 8),
+
+  Expired((short) 9),
 
   /** To be used to represent not present or null. */
   NULL_VAL((short) 255);
@@ -42,9 +46,13 @@ public enum ExecType {
       case 5:
         return Fill;
       case 6:
-        return Cancel;
+        return PartialFill;
       case 7:
+        return Cancel;
+      case 8:
         return Reject;
+      case 9:
+        return Expired;
       case 255:
         return NULL_VAL;
     }

@@ -2,10 +2,12 @@ package com.codingmonster.matchingengine;
 
 import com.codingmonster.common.sbe.trade.ExecType;
 import com.codingmonster.common.sbe.trade.OrdStatus;
+import com.codingmonster.common.sbe.trade.Side;
 
 public class Result {
   final int clOrdId; // client order ID
   final String execId; // unique per execution event
+  final Side side;
   final ExecType execType; // FIX ExecType
   final OrdStatus ordStatus; // FIX OrdStatus
   final int lastQty; // filled in this execution
@@ -18,6 +20,7 @@ public class Result {
   public Result(
       int clOrdId,
       String execId,
+      Side side,
       ExecType execType,
       OrdStatus ordStatus,
       int lastQty,
@@ -28,6 +31,7 @@ public class Result {
       long transactTime) {
     this.clOrdId = clOrdId;
     this.execId = execId;
+    this.side = side;
     this.execType = execType;
     this.ordStatus = ordStatus;
     this.lastQty = lastQty;

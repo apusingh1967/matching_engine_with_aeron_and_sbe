@@ -49,16 +49,18 @@
 		<enum name="ExecType" encodingType="uint8">
 			<validValue name="New">4</validValue>
 			<validValue name="Fill">5</validValue>
-			<validValue name="Cancel">6</validValue>
-			<validValue name="Reject">7</validValue>
+			<validValue name="PartialFill">6</validValue>
+			<validValue name="Cancel">7</validValue>
+			<validValue name="Reject">8</validValue>
+			<validValue name="Expired">9</validValue>
 		</enum>
 
 		<enum name="OrdStatus" encodingType="uint8">
-			<validValue name="New">8</validValue>
-			<validValue name="PartiallyFilled">9</validValue>
-			<validValue name="Filled">10</validValue>
-			<validValue name="Canceled">11</validValue>
-			<validValue name="Rejected">12</validValue>
+			<validValue name="New">10</validValue>
+			<validValue name="PartiallyFilled">11</validValue>
+			<validValue name="Filled">12</validValue>
+			<validValue name="Canceled">13</validValue>
+			<validValue name="Rejected">14</validValue>
 		</enum>
 	</types>
 
@@ -117,6 +119,7 @@
 		<field name="orderID" id="37" type="uint64" /> <!-- Exchange-generated -->
 		<field name="clOrdID" id="11" type="uint64" />
 		<field name="execID" id="17" type="uint64" />
+		<field name="side" id="54" type="Side" />
 		<field name="execType" id="150" type="ExecType" />
 		<field name="ordStatus" id="39" type="OrdStatus" />
 		<field name="filledQty" id="32" type="int32" />

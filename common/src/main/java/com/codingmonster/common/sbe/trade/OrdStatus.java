@@ -3,15 +3,15 @@ package com.codingmonster.common.sbe.trade;
 
 @SuppressWarnings("all")
 public enum OrdStatus {
-  New((short) 8),
+  New((short) 10),
 
-  PartiallyFilled((short) 9),
+  PartiallyFilled((short) 11),
 
-  Filled((short) 10),
+  Filled((short) 12),
 
-  Canceled((short) 11),
+  Canceled((short) 13),
 
-  Rejected((short) 12),
+  Rejected((short) 14),
 
   /** To be used to represent not present or null. */
   NULL_VAL((short) 255);
@@ -39,15 +39,15 @@ public enum OrdStatus {
    */
   public static OrdStatus get(final short value) {
     switch (value) {
-      case 8:
-        return New;
-      case 9:
-        return PartiallyFilled;
       case 10:
-        return Filled;
+        return New;
       case 11:
-        return Canceled;
+        return PartiallyFilled;
       case 12:
+        return Filled;
+      case 13:
+        return Canceled;
+      case 14:
         return Rejected;
       case 255:
         return NULL_VAL;
