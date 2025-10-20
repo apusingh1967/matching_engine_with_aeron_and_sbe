@@ -195,7 +195,8 @@ public class Main {
     if (newOrderSingleDecoder.orderType().equals(OrderType.Limit)
             || (newOrderSingleDecoder.orderType().equals(OrderType.Market))) {
       Order order = new Order(this.orderIdGenerator.nextId(), newOrderSingleDecoder.clOrdID(), newOrderSingleDecoder.symbol(),
-              newOrderSingleDecoder.price().mantissa(), newOrderSingleDecoder.orderQty(), newOrderSingleDecoder.side(), newOrderSingleDecoder.timestamp());
+              newOrderSingleDecoder.price().mantissa(), newOrderSingleDecoder.orderQty(), newOrderSingleDecoder.side(),
+              newOrderSingleDecoder.orderType(), newOrderSingleDecoder.timestamp());
       List<Result>results = matchingEngine.match(order);
       for(Result result: results) {
         sendExecutionReport(result);

@@ -1,5 +1,8 @@
 package com.codingmonster.matchingengine;
 
+import com.codingmonster.common.sbe.trade.OrderType;
+import com.codingmonster.common.sbe.trade.Side;
+
 import java.util.*;
 
 public class OrderBook {
@@ -18,6 +21,48 @@ public class OrderBook {
   }
 
   List<Result> match(Order order) {
-    return null;
+    List<Result> results = new ArrayList<>();
+
+    switch (order.orderType) {
+      case Limit -> {
+        if (order.side == Side.Buy) {
+          matchLimitBuy(order, results);
+        } else if (order.side == Side.Sell) {
+          matchLimitSell(order, results);
+        } else {
+          throw new IllegalArgumentException("Invalid side: " + order.side);
+        }
+      }
+      case Market -> {
+        if (order.side == Side.Buy) {
+          matchMarketBuy(order, results);
+        } else if (order.side == Side.Sell) {
+          matchMarketSell(order, results);
+        } else {
+          throw new IllegalArgumentException("Invalid side: " + order.side);
+        }
+      }
+      default -> throw new IllegalArgumentException("Invalid order type: " + order.orderType);
+    }
+
+    return results;
   }
+
+  private void matchLimitBuy(Order order, List<Result> results) {
+
+  }
+
+  private void matchLimitSell(Order order, List<Result> results) {
+
+  }
+
+  private void matchMarketBuy(Order order, List<Result> results) {
+
+  }
+
+  private void matchMarketSell(Order order, List<Result> results) {
+
+  }
+
+
 }
