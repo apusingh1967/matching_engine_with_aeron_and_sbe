@@ -73,7 +73,7 @@ public class Main {
 
     // try (MediaDriver ignore = MediaDriver.launchEmbedded(context)) {
     //    for (int i = 0; i < 1; i++) {
-          final int core = 0;
+    final int core = 0;
     // CPU affinity with core. In hyperthreading, will try to affinity one thread per
     // core, and when all used, then move to use hyperthreaded twin
     // does not work on ARM, uncomment on x64 for thread affinity
@@ -178,8 +178,7 @@ public class Main {
 
     String senderCompID = newOrderSingleDecoder.senderCompID();
     long clOrdID = newOrderSingleDecoder.clOrdID();
-    Side side =
-        newOrderSingleDecoder.side();
+    Side side = newOrderSingleDecoder.side();
     int qty = newOrderSingleDecoder.orderQty();
     PriceDecoder price = newOrderSingleDecoder.price();
     long timestamp = newOrderSingleDecoder.timestamp();
@@ -193,12 +192,20 @@ public class Main {
         timestamp);
 
     if (newOrderSingleDecoder.orderType().equals(OrderType.Limit)
-            || (newOrderSingleDecoder.orderType().equals(OrderType.Market))) {
-      Order order = new Order(this.orderIdGenerator.nextId(), newOrderSingleDecoder.clOrdID(), senderCompID, newOrderSingleDecoder.symbol(),
-              newOrderSingleDecoder.price().mantissa(), newOrderSingleDecoder.orderQty(), newOrderSingleDecoder.side(),
-              newOrderSingleDecoder.orderType(), newOrderSingleDecoder.timestamp());
-      List<Result>results = matchingEngine.match(order);
-      for(Result result: results) {
+        || (newOrderSingleDecoder.orderType().equals(OrderType.Market))) {
+      Order order =
+          new Order(
+              this.orderIdGenerator.nextId(),
+              newOrderSingleDecoder.clOrdID(),
+              senderCompID,
+              newOrderSingleDecoder.symbol(),
+              newOrderSingleDecoder.price().mantissa(),
+              newOrderSingleDecoder.orderQty(),
+              newOrderSingleDecoder.side(),
+              newOrderSingleDecoder.orderType(),
+              newOrderSingleDecoder.timestamp());
+      List<Result> results = matchingEngine.match(order);
+      for (Result result : results) {
         sendExecutionReport(result);
       }
     } else {

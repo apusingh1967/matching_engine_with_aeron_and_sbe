@@ -16,14 +16,15 @@ class Order {
   public final long timestamp; // Entry time (ns)
 
   public Order(
-          long orderId,
-          long clOrdId,
-          String senderCompId,
-          String instrumentId,
-          long price,
-          int quantity,
-          Side side,
-          OrderType orderType, long timestamp) {
+      long orderId,
+      long clOrdId,
+      String senderCompId,
+      String instrumentId,
+      long price,
+      int quantity,
+      Side side,
+      OrderType orderType,
+      long timestamp) {
     this.orderId = orderId;
     this.clOrdId = clOrdId;
     this.senderCompId = senderCompId;
