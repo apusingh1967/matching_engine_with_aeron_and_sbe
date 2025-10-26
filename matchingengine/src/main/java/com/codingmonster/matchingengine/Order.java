@@ -6,6 +6,7 @@ import com.codingmonster.common.sbe.trade.Side;
 class Order {
   public final long orderId; // Exchange-generated unique ID
   public final long clOrdId; // Client-provided ID
+  public final String senderCompId;
   public final String instrumentId; // Numeric ID for symbol (for fast lookup)
   public final long price; // Integer ticks (e.g. 123456 = $1234.56)
   public final int quantity; // Original order quantity
@@ -17,6 +18,7 @@ class Order {
   public Order(
           long orderId,
           long clOrdId,
+          String senderCompId,
           String instrumentId,
           long price,
           int quantity,
@@ -24,6 +26,7 @@ class Order {
           OrderType orderType, long timestamp) {
     this.orderId = orderId;
     this.clOrdId = clOrdId;
+    this.senderCompId = senderCompId;
     this.instrumentId = instrumentId;
     this.price = price;
     this.quantity = quantity;

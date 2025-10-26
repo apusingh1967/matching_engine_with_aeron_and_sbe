@@ -176,7 +176,7 @@ public class Main {
       DirectBuffer buffer, int offset, MessageHeaderDecoder headerDecoder) {
     newOrderSingleDecoder.wrapAndApplyHeader(buffer, offset, headerDecoder);
 
-    var senderCompID = newOrderSingleDecoder.senderCompID();
+    String senderCompID = newOrderSingleDecoder.senderCompID();
     long clOrdID = newOrderSingleDecoder.clOrdID();
     Side side =
         newOrderSingleDecoder.side();
@@ -194,7 +194,7 @@ public class Main {
 
     if (newOrderSingleDecoder.orderType().equals(OrderType.Limit)
             || (newOrderSingleDecoder.orderType().equals(OrderType.Market))) {
-      Order order = new Order(this.orderIdGenerator.nextId(), newOrderSingleDecoder.clOrdID(), newOrderSingleDecoder.symbol(),
+      Order order = new Order(this.orderIdGenerator.nextId(), newOrderSingleDecoder.clOrdID(), senderCompID, newOrderSingleDecoder.symbol(),
               newOrderSingleDecoder.price().mantissa(), newOrderSingleDecoder.orderQty(), newOrderSingleDecoder.side(),
               newOrderSingleDecoder.orderType(), newOrderSingleDecoder.timestamp());
       List<Result>results = matchingEngine.match(order);

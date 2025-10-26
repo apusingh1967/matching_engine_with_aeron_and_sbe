@@ -5,9 +5,9 @@ import com.codingmonster.common.sbe.trade.OrdStatus;
 import com.codingmonster.common.sbe.trade.Side;
 
 public class Result {
-  final int clOrdId; // client order ID
+  final long clOrdId; // client order ID
   final String senderCompID;
-  final String execId; // unique per execution event
+  final long execId; // unique per execution event
   final Side side;
   final ExecType execType; // FIX ExecType
   final OrdStatus ordStatus; // FIX OrdStatus
@@ -19,9 +19,9 @@ public class Result {
   final long transactTime; // epoch nanos or FIX UTCTimestamp
 
   public Result(
-      int clOrdId,
+      long clOrdId,
       String senderCompID,
-      String execId,
+      long execId,
       Side side,
       ExecType execType,
       OrdStatus ordStatus,

@@ -17,4 +17,5 @@ public class OrderIdGenerator {
         long seqPart = sequence.getAndIncrement() & 0xFFF;
         return timePart | shardPart | seqPart;
     }
+
 }

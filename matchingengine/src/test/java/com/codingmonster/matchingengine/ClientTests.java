@@ -79,7 +79,8 @@ public class ClientTests {
         .side(Side.Buy) // e.g., Buy
         .orderQty(100)
         .orderType(OrderType.Market);
-    orderEncoder.price().exponent((byte) 5).mantissa(22345);
+    // exponent two decimal for equity
+    orderEncoder.price().exponent((byte) 2).mantissa(22345);
     int length = MessageHeaderEncoder.ENCODED_LENGTH + orderEncoder.encodedLength();
 
     // Send the message over Aeron
