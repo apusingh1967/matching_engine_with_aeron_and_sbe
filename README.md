@@ -29,6 +29,11 @@ This is needed in three places, aeron starter i.e. run.sh, Main.java, and Integr
 * Start Matching Engine - gradle run
 * Run IntegrationTests - gradle :matchingengine:test --tests "com.codingmonster.matchingengine.IntegrationTests"
 
+### or just use IntelliJ Run Configuration which I have checked in.
+It gives added advantage that you can run in Debug mode.
+But don't forget to ensure that aeron.dir is correctly set as per operating system.
+![img_1.png](img_1.png)
+
 #### Start Media Driver
 cd aeron
 curl -O https://repo1.maven.org/maven2/io/aeron/aeron-all/1.44.0/aeron-all-1.44.0.jar
