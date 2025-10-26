@@ -49,9 +49,7 @@ public class IntegrationTests {
   public void given_sell_and_matched_buy_then_filled_er() {
     Aeron.Context ctx =
         new Aeron.Context()
-            .aeronDirectoryName(
-                System.getProperty("user.home")
-                    + "/aeron"); // match the name with server process if using IPC
+            .aeronDirectoryName("/tmp/aeron"); // match the name with server process if using IPC
     try (Aeron aeron = Aeron.connect(ctx)) {
       publish(aeron);
       processResponse(aeron);

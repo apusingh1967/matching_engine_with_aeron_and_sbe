@@ -98,8 +98,7 @@ public class Main {
     // not thread safe, create in each thread
     MediaDriver.Context context =
         new MediaDriver.Context()
-            .aeronDirectoryName(
-                System.getProperty("user.home") + "/aeron"); // .dirDeleteOnStart(true);
+            .aeronDirectoryName("/tmp/aeron"); // .dirDeleteOnStart(true);
 
     Aeron.Context aeronCtx = new Aeron.Context().aeronDirectoryName(context.aeronDirectoryName());
 
