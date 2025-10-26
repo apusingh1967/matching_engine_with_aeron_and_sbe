@@ -48,9 +48,27 @@ java \
 -Daeron.driver.timeout=60000 \
 -cp aeron-all-1.44.0.jar io.aeron.driver.MediaDriver
 
-.. or just do `./run.sh`. This is a script in aeron folder.
+#### Start Media Driver
+See project root build.gradle. You may need to modify based on your OS. Or just do:
+`cd aeron`
+`./run.sh`
+
+`gradle runMediaDriver`
 
 #### Start Matching Engine
-
+`gradle run`
 
 #### Run Integration Tests
+`gradle :matchingengine:test --tests "com.codingmonster.matchingengine.IntegrationTests"`
+
+#### SBE Java Code
+This is already done and code is checked in.
+But in case you want, you could change schema and rerun.
+
+Generate SBE Java Code from xml schema!
+
+`cd common`
+`gradle cleanSbeMessages`
+`gradle generateMessages`
+
+Schema is in resources/com/codingmonster/common/messages.xml along with the xsd

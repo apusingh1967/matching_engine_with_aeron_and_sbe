@@ -25,7 +25,7 @@ subprojects {
         useJUnitPlatform() // Very important to enable JUnit Jupiter
     }
 
-    def aeronDir = System.getProperty('user.home') + '/aeron'
+    def aeronDir = '/tmp/aeron'
     plugins.withId('application') {
     applicationDefaultJvmArgs = [
       "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
@@ -95,4 +95,11 @@ spotless {
         trimTrailingWhitespace()
         endWithNewline()
     }
+}
+
+tasks.register('runMediaDriver', Exec) {
+    commandLine '/bin/zsh', './run.sh' // Specify the shell executable and your script
+    workingDir 'aeron' // Optional: Set the working directory for the script
+    standardOutput = System.out // Optional: Redirect script's standard output to Gradle's console
+    errorOutput = System.err // Optional: Redirect script's error output to Gradle's console
 }

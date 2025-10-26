@@ -1,6 +1,6 @@
-gradle cleanSbeMessages
-gradle generateMessages
+Generate SBE Java Code from xml schema!
 
-schema is in resources/com/codingmonster/common/messages.xml along with the xsd
+`gradle cleanSbeMessages`
+`gradle generateMessages`
 
-resources/dev has dev configurations
+Schema is in resources/com/codingmonster/common/messages.xml along with the xsd
