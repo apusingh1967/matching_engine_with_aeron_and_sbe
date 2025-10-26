@@ -13,10 +13,10 @@ public class OrderBook {
 
   // price to list of orders in insertion order FIFO from highest to lowest px
   // use tailMap(key, true) to read
-  private NavigableMap<Long, LinkedList<Order>> buy;
+  private final NavigableMap<Long, LinkedList<Order>> buy;
   // price to list of orders in insertion order FIFO from lowest to highest px
   // use headMap(key, true) to read
-  private NavigableMap<Long, LinkedList<Order>> sell;
+  private final NavigableMap<Long, LinkedList<Order>> sell;
 
   public OrderBook() {
     this.buy = new TreeMap<>(Comparator.reverseOrder()); // highest to lowest px
@@ -59,7 +59,8 @@ public class OrderBook {
   }
 
   private void matchLimitBuy(Order incomingOrder, List<Result> results) {
-    NavigableMap<Long, LinkedList<Order>> multiOrders = this.sell.headMap(incomingOrder.price, true);
+    NavigableMap<Long, LinkedList<Order>> multiOrders =
+        this.sell.headMap(incomingOrder.price, true);
     match(incomingOrder, results, multiOrders, Side.Buy);
   }
 
@@ -69,7 +70,8 @@ public class OrderBook {
   }
 
   private void matchMarketBuy(Order incomingOrder, List<Result> results) {
-    NavigableMap<Long, LinkedList<Order>> multiOrders = this.sell.headMap(incomingOrder.price, true);
+    NavigableMap<Long, LinkedList<Order>> multiOrders =
+        this.sell.headMap(incomingOrder.price, true);
     match(incomingOrder, results, multiOrders, Side.Buy);
   }
 
@@ -146,22 +148,22 @@ public class OrderBook {
           // add limit order with remaining qty to book
           this.buy.putIfAbsent(incomingOrder.price, new LinkedList<>());
           this.buy.get(incomingOrder.price).add(incomingOrder);
-        } else if(incomingOrder.orderType == OrderType.Market) {
+        } else if (incomingOrder.orderType == OrderType.Market) {
           Result incomingOrderResult =
-                  new Result(
-                          incomingOrder.clOrdId,
-                          incomingOrder.senderCompId,
-                          (incomingOrder.orderId << 16) | (2 & 0xFFFF),
-                          side,
-                          ExecType.PartialFill,
-                          OrdStatus.PartiallyFilled,
-                          incomingOrder.filledQuantity, // lastQty: filled in this execution
-                          incomingOrder.quantity
-                                  - incomingOrder.filledQuantity, // leavesQty: remaining qty after execution
-                          filled, // total filled so far
-                          orders.getKey(),
-                          -1, // will do maybe some other time
-                          incomingOrder.timestamp);
+              new Result(
+                  incomingOrder.clOrdId,
+                  incomingOrder.senderCompId,
+                  (incomingOrder.orderId << 16) | (2 & 0xFFFF),
+                  side,
+                  ExecType.PartialFill,
+                  OrdStatus.PartiallyFilled,
+                  incomingOrder.filledQuantity, // lastQty: filled in this execution
+                  incomingOrder.quantity
+                      - incomingOrder.filledQuantity, // leavesQty: remaining qty after execution
+                  filled, // total filled so far
+                  orders.getKey(),
+                  -1, // will do maybe some other time
+                  incomingOrder.timestamp);
           results.add(incomingOrderResult);
         }
       }
