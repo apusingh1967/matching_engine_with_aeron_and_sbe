@@ -143,29 +143,34 @@ public class OrderBook {
       if (orders.getValue().isEmpty()) {
         multiOrdersItr.remove();
       }
-      if (incomingOrder.filledQuantity < incomingOrder.quantity) {
-        if (incomingOrder.orderType == OrderType.Limit) {
-          // add limit order with remaining qty to book
+    }
+    if (incomingOrder.filledQuantity < incomingOrder.quantity) {
+      if (incomingOrder.orderType == OrderType.Limit) {
+        // add limit order with remaining qty to book
+        if (side == Side.Buy) {
           this.buy.putIfAbsent(incomingOrder.price, new LinkedList<>());
           this.buy.get(incomingOrder.price).add(incomingOrder);
-        } else if (incomingOrder.orderType == OrderType.Market) {
-          Result incomingOrderResult =
-              new Result(
-                  incomingOrder.clOrdId,
-                  incomingOrder.senderCompId,
-                  (incomingOrder.orderId << 16) | (2 & 0xFFFF),
-                  side,
-                  ExecType.PartialFill,
-                  OrdStatus.PartiallyFilled,
-                  incomingOrder.filledQuantity, // lastQty: filled in this execution
-                  incomingOrder.quantity
-                      - incomingOrder.filledQuantity, // leavesQty: remaining qty after execution
-                  filled, // total filled so far
-                  orders.getKey(),
-                  -1, // will do maybe some other time
-                  incomingOrder.timestamp);
-          results.add(incomingOrderResult);
+        } else if (side == Side.Sell) {
+          this.sell.putIfAbsent(incomingOrder.price, new LinkedList<>());
+          this.sell.get(incomingOrder.price).add(incomingOrder);
         }
+      } else if (incomingOrder.orderType == OrderType.Market) {
+        Result incomingOrderResult =
+                new Result(
+                        incomingOrder.clOrdId,
+                        incomingOrder.senderCompId,
+                        (incomingOrder.orderId << 16) | (2 & 0xFFFF),
+                        side,
+                        ExecType.PartialFill,
+                        OrdStatus.PartiallyFilled,
+                        incomingOrder.filledQuantity, // lastQty: filled in this execution
+                        incomingOrder.quantity
+                                - incomingOrder.filledQuantity, // leavesQty: remaining qty after execution
+                        filled, // total filled so far
+                        incomingOrder.price,
+                        -1, // will do maybe some other time
+                        incomingOrder.timestamp);
+        results.add(incomingOrderResult);
       }
     }
   }
