@@ -148,7 +148,7 @@ public class Main {
                     // TODO order cancel
                     break;
                   case StopSessionDecoder.TEMPLATE_ID:
-                    // admin message to shutdown ME
+                    // admin message to shut down ME
                     latch.countDown();
                     break;
                   default:
@@ -231,11 +231,9 @@ public class Main {
 
     // 4. Calculate total length = header + payload
     //    Unlike something like ByteBuffer.flip() in NIO, Aeron doesn’t know how much of your buffer
-    // you used
-    //    because you’re using SBE, which encodes data into a raw buffer independently.
+    // you used because you’re using SBE, which encodes data into a raw buffer independently.
     //    So unless you track how much data was written, Aeron has no clue what your message
-    // boundaries are.
-    //    That’s why you calculate the exact length manually.
+    // boundaries are. That’s why you calculate the exact length manually.
     int length = messageHeaderEncoder.encodedLength() + executionReportEncoder.encodedLength();
 
     Publication publication = publications.get(result.senderCompID);

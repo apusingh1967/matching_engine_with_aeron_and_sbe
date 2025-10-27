@@ -61,7 +61,7 @@ See project root build.gradle. You may need to modify based on your OS. Or just 
 #### Run Integration Tests
 `gradle :matchingengine:test --tests "com.codingmonster.matchingengine.IntegrationTests"`
 
-#### SBE Java Code
+#### (Optional) SBE Java Code
 This is already done and code is checked in.
 But in case you want, you could change schema and rerun.
 
