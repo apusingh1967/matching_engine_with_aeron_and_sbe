@@ -7,8 +7,8 @@
 	<!-- ========= Types ========= -->
 	<types>
 		<composite name="groupSizeEncoding">
-			<type name="blockLength" primitiveType="uint16"/>
-			<type name="numInGroup" primitiveType="uint8"/>
+			<type name="blockLength" primitiveType="uint16" />
+			<type name="numInGroup" primitiveType="uint8" />
 		</composite>
 
 		<composite name="varStringEncoding">

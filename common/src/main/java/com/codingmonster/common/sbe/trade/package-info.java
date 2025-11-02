@@ -1,5 +1,3 @@
 /* Generated SBE (Simple Binary Encoding) message codecs.*/
-/**
- * null
- */
+/** null */
 package com.codingmonster.common.sbe.trade;

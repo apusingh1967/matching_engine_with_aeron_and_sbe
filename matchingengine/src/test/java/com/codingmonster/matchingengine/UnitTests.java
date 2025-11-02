@@ -5,7 +5,7 @@ import com.codingmonster.common.sbe.trade.Side;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 
-public class MatchingEngineUnitTests {
+public class UnitTests {
 
   @Test
   public void testme() {

@@ -61,16 +61,18 @@ public class IntegrationTests {
     // or udp if sending to another machine e.g. - "aeron:udp?endpoint=localhost:40123"
 
     int offset = 0;
-    headerEncoder
-        .wrap(buffer, offset)
-        .blockLength(orderEncoder.sbeBlockLength())
-        .templateId(orderEncoder.sbeTemplateId())
-        .schemaId(orderEncoder.sbeSchemaId())
-        .version(orderEncoder.sbeSchemaVersion());
-
-    offset += headerEncoder.encodedLength();
+    // this is redundant!
+    //        headerEncoder
+    //            .wrap(buffer, offset)
+    //            .blockLength(orderEncoder.sbeBlockLength())
+    //            .templateId(orderEncoder.sbeTemplateId())
+    //            .schemaId(orderEncoder.sbeSchemaId())
+    //            .version(orderEncoder.sbeSchemaVersion());
+    //    offset += headerEncoder.encodedLength();
+    //    orderEncoder.wrap(buffer, offset);
 
     orderEncoder
+        // shortcut for adding header data and moving offset
         .wrapAndApplyHeader(buffer, offset, headerEncoder)
         .senderCompID("trader1")
         .clOrdID(12345)
