@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Showing an example of how to encode and decode MarketDepth which has two levels of groups Group
- * is like an array Market depth has an array of: bids, asks, mid Bids/asks is an array of elements
- * each of which is a price & qty
+ * is like an array Market depth has an array of: bids, asks, mid. Bids/asks/mid is an array of
+ * elements each of which is a price & qty
  */
 public class GroupsDemoUsingMarketDepthTests {
 
@@ -36,26 +36,32 @@ public class GroupsDemoUsingMarketDepthTests {
     mde.exchange().appendTo(new StringBuilder("NASDAQ"));
 
     // Start the outer group with a count (number of bookLevels)
-    MarketDepthEncoder.BookLevelEncoder bookLevels = mde.bookLevelCount(2);
+    MarketDepthEncoder.BookLevelEncoder bookLevels = mde.bookLevelCount(3);
 
     bookLevels.next(); // advance to first group entry
     bookLevels.bookType(MDEntryType.BID); // set the type enum
 
-    // now encode entries inside this book level
+    // First level, bids
     MarketDepthEncoder.BookLevelEncoder.EntriesEncoder entries = bookLevels.entriesCount(3);
-
-    // add each entry
     add_entry(entries, 9995, 2000);
     add_entry(entries, 9990, 1500);
     add_entry(entries, 9985, 1000);
+    // only three entries allowed!
 
-    // ---- Second book level (e.g. OFFERS) ----
+    // ---- MID ----
+    bookLevels.next();
+    bookLevels.bookType(MDEntryType.MID);
+    entries = bookLevels.entriesCount(1);
+    add_entry(entries, 1000, 1500);
+
+    // ---- third book level, offers
     bookLevels.next();
     bookLevels.bookType(MDEntryType.OFFER);
 
-    MarketDepthEncoder.BookLevelEncoder.EntriesEncoder entries2 = bookLevels.entriesCount(2);
+    entries = bookLevels.entriesCount(2);
     add_entry(entries, 1005, 2000);
     add_entry(entries, 1010, 1000);
+    // only two entries allowed!
 
     // One could batch multiple messages in the byteBuffer for efficiency
     //  encode message 1
