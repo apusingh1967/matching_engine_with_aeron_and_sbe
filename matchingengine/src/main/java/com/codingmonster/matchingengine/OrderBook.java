@@ -156,20 +156,20 @@ public class OrderBook {
         }
       } else if (incomingOrder.orderType == OrderType.Market) {
         Result incomingOrderResult =
-                new Result(
-                        incomingOrder.clOrdId,
-                        incomingOrder.senderCompId,
-                        (incomingOrder.orderId << 16) | (2 & 0xFFFF),
-                        side,
-                        ExecType.PartialFill,
-                        OrdStatus.PartiallyFilled,
-                        incomingOrder.filledQuantity, // lastQty: filled in this execution
-                        incomingOrder.quantity
-                                - incomingOrder.filledQuantity, // leavesQty: remaining qty after execution
-                        filled, // total filled so far
-                        incomingOrder.price,
-                        -1, // will do maybe some other time
-                        incomingOrder.timestamp);
+            new Result(
+                incomingOrder.clOrdId,
+                incomingOrder.senderCompId,
+                (incomingOrder.orderId << 16) | (2 & 0xFFFF),
+                side,
+                ExecType.PartialFill,
+                OrdStatus.PartiallyFilled,
+                incomingOrder.filledQuantity, // lastQty: filled in this execution
+                incomingOrder.quantity
+                    - incomingOrder.filledQuantity, // leavesQty: remaining qty after execution
+                filled, // total filled so far
+                incomingOrder.price,
+                -1, // will do maybe some other time
+                incomingOrder.timestamp);
         results.add(incomingOrderResult);
       }
     }

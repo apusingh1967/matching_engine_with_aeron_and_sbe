@@ -2,17 +2,13 @@
 package com.codingmonster.common.sbe.trade;
 
 @SuppressWarnings("all")
-public enum OrdStatus
+public enum MDEntryType
 {
-    New((short)10),
+    BID((short)0),
 
-    PartiallyFilled((short)11),
+    OFFER((short)1),
 
-    Filled((short)12),
-
-    Canceled((short)13),
-
-    Rejected((short)14),
+    MID((short)2),
 
     /**
      * To be used to represent not present or null.
@@ -21,7 +17,7 @@ public enum OrdStatus
 
     private final short value;
 
-    OrdStatus(final short value)
+    MDEntryType(final short value)
     {
         this.value = value;
     }
@@ -42,15 +38,13 @@ public enum OrdStatus
      * @param value encoded to be looked up.
      * @return the enum value representing the value.
      */
-    public static OrdStatus get(final short value)
+    public static MDEntryType get(final short value)
     {
         switch (value)
         {
-            case 10: return New;
-            case 11: return PartiallyFilled;
-            case 12: return Filled;
-            case 13: return Canceled;
-            case 14: return Rejected;
+            case 0: return BID;
+            case 1: return OFFER;
+            case 2: return MID;
             case 255: return NULL_VAL;
         }
 

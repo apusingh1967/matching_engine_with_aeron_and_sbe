@@ -1,20 +1,20 @@
 /* Generated SBE (Simple Binary Encoding) message codec. */
 package com.codingmonster.common.sbe.trade;
 
-import org.agrona.DirectBuffer;
+import org.agrona.MutableDirectBuffer;
 
 @SuppressWarnings("all")
-public final class VarStringEncodingDecoder
+public final class GroupSizeEncodingEncoder
 {
     public static final int SCHEMA_ID = 0;
     public static final int SCHEMA_VERSION = 1;
-    public static final int ENCODED_LENGTH = -1;
+    public static final int ENCODED_LENGTH = 3;
     public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.LITTLE_ENDIAN;
 
     private int offset;
-    private DirectBuffer buffer;
+    private MutableDirectBuffer buffer;
 
-    public VarStringEncodingDecoder wrap(final DirectBuffer buffer, final int offset)
+    public GroupSizeEncodingEncoder wrap(final MutableDirectBuffer buffer, final int offset)
     {
         if (buffer != this.buffer)
         {
@@ -25,7 +25,7 @@ public final class VarStringEncodingDecoder
         return this;
     }
 
-    public DirectBuffer buffer()
+    public MutableDirectBuffer buffer()
     {
         return buffer;
     }
@@ -50,71 +50,69 @@ public final class VarStringEncodingDecoder
         return SCHEMA_VERSION;
     }
 
-    public static int lengthEncodingOffset()
+    public static int blockLengthEncodingOffset()
     {
         return 0;
     }
 
-    public static int lengthEncodingLength()
+    public static int blockLengthEncodingLength()
     {
         return 2;
     }
 
-    public static int lengthSinceVersion()
-    {
-        return 0;
-    }
-
-    public static int lengthNullValue()
+    public static int blockLengthNullValue()
     {
         return 65535;
     }
 
-    public static int lengthMinValue()
+    public static int blockLengthMinValue()
     {
         return 0;
     }
 
-    public static int lengthMaxValue()
+    public static int blockLengthMaxValue()
     {
         return 65534;
     }
 
-    public int length()
+    public GroupSizeEncodingEncoder blockLength(final int value)
     {
-        return (buffer.getShort(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        buffer.putShort(offset + 0, (short)value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return this;
     }
 
 
-    public static int varDataEncodingOffset()
+    public static int numInGroupEncodingOffset()
     {
         return 2;
     }
 
-    public static int varDataEncodingLength()
+    public static int numInGroupEncodingLength()
     {
-        return -1;
+        return 1;
     }
 
-    public static int varDataSinceVersion()
-    {
-        return 0;
-    }
-
-    public static short varDataNullValue()
+    public static short numInGroupNullValue()
     {
         return (short)255;
     }
 
-    public static short varDataMinValue()
+    public static short numInGroupMinValue()
     {
         return (short)0;
     }
 
-    public static short varDataMaxValue()
+    public static short numInGroupMaxValue()
     {
         return (short)254;
     }
+
+    public GroupSizeEncodingEncoder numInGroup(final short value)
+    {
+        buffer.putByte(offset + 2, (byte)value);
+        return this;
+    }
+
 
     public String toString()
     {
@@ -133,12 +131,9 @@ public final class VarStringEncodingDecoder
             return builder;
         }
 
-        builder.append('(');
-        builder.append("length=");
-        builder.append(this.length());
-        builder.append('|');
-        builder.append(')');
+        final GroupSizeEncodingDecoder decoder = new GroupSizeEncodingDecoder();
+        decoder.wrap(buffer, offset);
 
-        return builder;
+        return decoder.appendTo(builder);
     }
 }

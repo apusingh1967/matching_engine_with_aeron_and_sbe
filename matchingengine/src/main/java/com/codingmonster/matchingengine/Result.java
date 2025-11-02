@@ -47,19 +47,32 @@ public class Result {
 
   @Override
   public String toString() {
-    return "Result{" +
-            "clOrdId=" + clOrdId +
-            ", senderCompID='" + senderCompID + '\'' +
-            ", execId=" + execId +
-            ", side=" + side +
-            ", execType=" + execType +
-            ", ordStatus=" + ordStatus +
-            ", lastQty=" + lastQty +
-            ", leavesQty=" + leavesQty +
-            ", cumQty=" + cumQty +
-            ", lastPx=" + lastPx +
-            ", avgPx=" + avgPx +
-            ", transactTime=" + transactTime +
-            '}';
+    return "Result{"
+        + "clOrdId="
+        + clOrdId
+        + ", senderCompID='"
+        + senderCompID
+        + '\''
+        + ", execId="
+        + execId
+        + ", side="
+        + side
+        + ", execType="
+        + execType
+        + ", ordStatus="
+        + ordStatus
+        + ", lastQty="
+        + lastQty
+        + ", leavesQty="
+        + leavesQty
+        + ", cumQty="
+        + cumQty
+        + ", lastPx="
+        + lastPx
+        + ", avgPx="
+        + avgPx
+        + ", transactTime="
+        + transactTime
+        + '}';
   }
 }

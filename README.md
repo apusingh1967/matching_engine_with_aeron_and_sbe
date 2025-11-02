@@ -20,8 +20,8 @@ Order modify (OCRR) and cancel (OCR) is not yet supported.
 
 ## Important Issue to Fix before Running
 Aeron media driver, Java Main (matching engine), and IntegrationTests must share same shared memory folder.
-Just search for /tmp/aeron right now in use.
-On Windows PC you will need to replace with C;\... etc.
+Just search for /tmp/aeron which is right now in use on Macbook.
+On Windows PC you will need to replace with C;\... etc. in all three files.
 This is needed in three places, aeron starter i.e. run.sh, Main.java, and IntegrationTests.java.
 
 ## How to Run (Steps)

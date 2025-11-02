@@ -4,17 +4,17 @@ package com.codingmonster.common.sbe.trade;
 import org.agrona.MutableDirectBuffer;
 
 @SuppressWarnings("all")
-public final class VarStringEncodingEncoder
+public final class QuantityEncoder
 {
     public static final int SCHEMA_ID = 0;
     public static final int SCHEMA_VERSION = 1;
-    public static final int ENCODED_LENGTH = -1;
+    public static final int ENCODED_LENGTH = 9;
     public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.LITTLE_ENDIAN;
 
     private int offset;
     private MutableDirectBuffer buffer;
 
-    public VarStringEncodingEncoder wrap(final MutableDirectBuffer buffer, final int offset)
+    public QuantityEncoder wrap(final MutableDirectBuffer buffer, final int offset)
     {
         if (buffer != this.buffer)
         {
@@ -50,62 +50,69 @@ public final class VarStringEncodingEncoder
         return SCHEMA_VERSION;
     }
 
-    public static int lengthEncodingOffset()
+    public static int mantissaEncodingOffset()
     {
         return 0;
     }
 
-    public static int lengthEncodingLength()
+    public static int mantissaEncodingLength()
     {
-        return 2;
+        return 8;
     }
 
-    public static int lengthNullValue()
+    public static long mantissaNullValue()
     {
-        return 65535;
+        return -9223372036854775808L;
     }
 
-    public static int lengthMinValue()
+    public static long mantissaMinValue()
     {
-        return 0;
+        return -9223372036854775807L;
     }
 
-    public static int lengthMaxValue()
+    public static long mantissaMaxValue()
     {
-        return 65534;
+        return 9223372036854775807L;
     }
 
-    public VarStringEncodingEncoder length(final int value)
+    public QuantityEncoder mantissa(final long value)
     {
-        buffer.putShort(offset + 0, (short)value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putLong(offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 
 
-    public static int varDataEncodingOffset()
+    public static int exponentEncodingOffset()
     {
-        return 2;
+        return 8;
     }
 
-    public static int varDataEncodingLength()
+    public static int exponentEncodingLength()
     {
-        return -1;
+        return 1;
     }
 
-    public static short varDataNullValue()
+    public static byte exponentNullValue()
     {
-        return (short)255;
+        return (byte)-128;
     }
 
-    public static short varDataMinValue()
+    public static byte exponentMinValue()
     {
-        return (short)0;
+        return (byte)-127;
     }
 
-    public static short varDataMaxValue()
+    public static byte exponentMaxValue()
     {
-        return (short)254;
+        return (byte)127;
     }
+
+    public QuantityEncoder exponent(final byte value)
+    {
+        buffer.putByte(offset + 8, value);
+        return this;
+    }
+
 
     public String toString()
     {
@@ -124,7 +131,7 @@ public final class VarStringEncodingEncoder
             return builder;
         }
 
-        final VarStringEncodingDecoder decoder = new VarStringEncodingDecoder();
+        final QuantityDecoder decoder = new QuantityDecoder();
         decoder.wrap(buffer, offset);
 
         return decoder.appendTo(builder);

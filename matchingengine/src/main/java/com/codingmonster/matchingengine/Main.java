@@ -24,7 +24,7 @@ public class Main {
   private final Logger LOG = LoggerFactory.getLogger(this.getClass());
   private static CountDownLatch latch;
 
-  // none of these following fields is thread safe
+  // none of these following fields is thread safe,
   // but we are going single thread, and plan to scale using thread per shard of instruments
 
   private final MatchingEngine matchingEngine;
@@ -53,17 +53,14 @@ public class Main {
   // The rest here is just for demonstrating other parameters.
   //
   // The constructor parameters mean:
-  // spins = 100
-  //   First, the thread will busy-spin in a loop for up to 100 iterations (fastest, lowest latency,
-  // but burns CPU).
-  // yields = 10
-  //   If still idle, the thread will call Thread.yield() up to 10 times (lets the OS scheduler run
-  // other threads).
-  // minParkPeriodNs = 1 microsecond
-  //   After spins and yields, the thread will LockSupport.parkNanos() for a small time (here: 1
-  // µs).
-  // maxParkPeriodNs = 1 millisecond
-  //   If it remains idle for longer, the park time backs off exponentially up to 1 ms max.
+  // spins = 100: First, the thread will busy-spin in a loop for up to 100 iterations (fastest,
+  // lowest latency, but burns CPU).
+  // yields = 10: If still idle, the thread will call Thread.yield() up to 10 times (lets the OS
+  // scheduler run other threads).
+  // minParkPeriodNs = 1 microsecond: After spins and yields, the thread will
+  // LockSupport.parkNanos() for a small time (here: 1 µs).
+  // maxParkPeriodNs = 1 millisecond: If it remains idle for longer, the park time backs off
+  // exponentially up to 1 ms max.
   private final IdleStrategy idleStrategy =
       new BackoffIdleStrategy(
           100, 10, TimeUnit.MICROSECONDS.toNanos(1), TimeUnit.MILLISECONDS.toNanos(1));
@@ -97,8 +94,7 @@ public class Main {
     this.orderIdGenerator = new OrderIdGenerator(core);
     // not thread safe, create in each thread
     MediaDriver.Context context =
-        new MediaDriver.Context()
-            .aeronDirectoryName("/tmp/aeron"); // .dirDeleteOnStart(true);
+        new MediaDriver.Context().aeronDirectoryName("/tmp/aeron"); // .dirDeleteOnStart(true);
 
     Aeron.Context aeronCtx = new Aeron.Context().aeronDirectoryName(context.aeronDirectoryName());
 

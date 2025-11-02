@@ -4,17 +4,17 @@ package com.codingmonster.common.sbe.trade;
 import org.agrona.DirectBuffer;
 
 @SuppressWarnings("all")
-public final class VarStringEncodingDecoder
+public final class QuantityDecoder
 {
     public static final int SCHEMA_ID = 0;
     public static final int SCHEMA_VERSION = 1;
-    public static final int ENCODED_LENGTH = -1;
+    public static final int ENCODED_LENGTH = 9;
     public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.LITTLE_ENDIAN;
 
     private int offset;
     private DirectBuffer buffer;
 
-    public VarStringEncodingDecoder wrap(final DirectBuffer buffer, final int offset)
+    public QuantityDecoder wrap(final DirectBuffer buffer, final int offset)
     {
         if (buffer != this.buffer)
         {
@@ -50,71 +50,77 @@ public final class VarStringEncodingDecoder
         return SCHEMA_VERSION;
     }
 
-    public static int lengthEncodingOffset()
+    public static int mantissaEncodingOffset()
     {
         return 0;
     }
 
-    public static int lengthEncodingLength()
+    public static int mantissaEncodingLength()
     {
-        return 2;
+        return 8;
     }
 
-    public static int lengthSinceVersion()
-    {
-        return 0;
-    }
-
-    public static int lengthNullValue()
-    {
-        return 65535;
-    }
-
-    public static int lengthMinValue()
+    public static int mantissaSinceVersion()
     {
         return 0;
     }
 
-    public static int lengthMaxValue()
+    public static long mantissaNullValue()
     {
-        return 65534;
+        return -9223372036854775808L;
     }
 
-    public int length()
+    public static long mantissaMinValue()
     {
-        return (buffer.getShort(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        return -9223372036854775807L;
+    }
+
+    public static long mantissaMaxValue()
+    {
+        return 9223372036854775807L;
+    }
+
+    public long mantissa()
+    {
+        return buffer.getLong(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
 
-    public static int varDataEncodingOffset()
+    public static int exponentEncodingOffset()
     {
-        return 2;
+        return 8;
     }
 
-    public static int varDataEncodingLength()
+    public static int exponentEncodingLength()
     {
-        return -1;
+        return 1;
     }
 
-    public static int varDataSinceVersion()
+    public static int exponentSinceVersion()
     {
         return 0;
     }
 
-    public static short varDataNullValue()
+    public static byte exponentNullValue()
     {
-        return (short)255;
+        return (byte)-128;
     }
 
-    public static short varDataMinValue()
+    public static byte exponentMinValue()
     {
-        return (short)0;
+        return (byte)-127;
     }
 
-    public static short varDataMaxValue()
+    public static byte exponentMaxValue()
     {
-        return (short)254;
+        return (byte)127;
     }
+
+    public byte exponent()
+    {
+        return buffer.getByte(offset + 8);
+    }
+
 
     public String toString()
     {
@@ -134,9 +140,11 @@ public final class VarStringEncodingDecoder
         }
 
         builder.append('(');
-        builder.append("length=");
-        builder.append(this.length());
+        builder.append("mantissa=");
+        builder.append(this.mantissa());
         builder.append('|');
+        builder.append("exponent=");
+        builder.append(this.exponent());
         builder.append(')');
 
         return builder;

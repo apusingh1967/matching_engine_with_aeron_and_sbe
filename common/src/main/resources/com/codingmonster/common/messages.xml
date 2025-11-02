@@ -6,13 +6,17 @@
 
 	<!-- ========= Types ========= -->
 	<types>
+		<composite name="groupSizeEncoding">
+			<type name="blockLength" primitiveType="uint16"/>
+			<type name="numInGroup" primitiveType="uint8"/>
+		</composite>
+
 		<composite name="varStringEncoding">
-			<type name="length" primitiveType="uint16" semanticType="Length" />
-			<type name="varData" primitiveType="uint16" length="0"
+			<type name="length" primitiveType="uint16" />
+			<type name="varData" primitiveType="uint8" length="0"
 				characterEncoding="UTF-8" />
 		</composite>
 
-		<!-- Composite Header -->
 		<composite name="messageHeader"
 			description="SBE standard message header">
 			<type name="blockLength" primitiveType="uint16" />
@@ -21,8 +25,12 @@
 			<type name="version" primitiveType="uint16" />
 		</composite>
 
-		<!-- Composite for decimal price -->
 		<composite name="Price">
+			<type name="mantissa" primitiveType="int64" />
+			<type name="exponent" primitiveType="int8" />
+		</composite>
+
+		<composite name="Quantity">
 			<type name="mantissa" primitiveType="int64" />
 			<type name="exponent" primitiveType="int8" />
 		</composite>
@@ -62,6 +70,12 @@
 			<validValue name="Canceled">13</validValue>
 			<validValue name="Rejected">14</validValue>
 		</enum>
+
+		<enum name="MDEntryType" encodingType="uint8">
+			<validValue name="BID">0</validValue>
+			<validValue name="OFFER">1</validValue>
+			<validValue name="MID">2</validValue>
+		</enum>
 	</types>
 
 	<!-- ========= sbe:messages ========= -->
@@ -99,22 +113,6 @@
 		<data name="senderCompID" id="49" type="varStringEncoding" />
 	</sbe:message>
 
-	<sbe:message name="MarketDataRequest" id="4"
-		blockLength="16">
-		<field name="mdReqID" id="262" type="uint64" />
-		<data name="symbol" id="55" type="varStringEncoding" />
-	</sbe:message>
-
-	<sbe:message name="MarketDataSnapshotFullRefresh" id="5"
-		blockLength="34">
-		<field name="mdReqID" id="262" type="uint64" />
-		<field name="bidPrice" id="132" type="Price" />
-		<field name="bidSize" id="134" type="int32" />
-		<field name="askPrice" id="133" type="Price" />
-		<field name="askSize" id="135" type="int32" />
-		<data name="symbol" id="55" type="varStringEncoding" />
-	</sbe:message>
-
 	<sbe:message name="ExecutionReport" id="6" blockLength="48">
 		<field name="orderID" id="37" type="uint64" /> <!-- Exchange-generated -->
 		<field name="clOrdID" id="11" type="uint64" />
@@ -144,6 +142,25 @@
 		<field name="price" id="44" type="Price" />
 		<field name="tradeTime" id="60" type="uint64" />
 		<data name="symbol" id="55" type="varStringEncoding" />
+	</sbe:message>
+
+	<sbe:message name="MarketDepth" id="1000"
+		description="Market Depth">
+		<field name="sequenceId" id="1001" type="uint64" />
+		<field name="instrumentId" id="1002" type="uint32" />
+		<field name="symbol" id="1003" type="varStringEncoding" />
+		<field name="exchange" id="1004" type="varStringEncoding" />
+		<field name="updateType" id="1005" type="uint8" />
+		<field name="timestamp" id="1006" type="uint64" />
+		<field name="exchangeTimestamp" id="1007" type="uint64"
+			presence="optional" />
+		<group name="bookLevel" id="1008">
+			<field name="bookType" id="1009" type="MDEntryType" />
+			<group name="entries" id="1010">
+				<field name="mdEntryPx" id="1011" type="Price" />
+				<field name="mdEntryQty" id="1012" type="Quantity" />
+			</group>
+		</group>
 	</sbe:message>
 
 </sbe:messageSchema>
