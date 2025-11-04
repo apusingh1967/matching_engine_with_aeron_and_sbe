@@ -23,7 +23,7 @@ public class OrderBook {
     this.sell = new TreeMap<>(Comparator.naturalOrder()); // lowest to highest px
   }
 
-  List<Result> match(Order order) {
+  List<Result> matchNewOrder(Order order) {
     List<Result> results = new ArrayList<>();
 
     switch (order.orderType) {
@@ -92,6 +92,9 @@ public class OrderBook {
       Iterator<Order> ordersItr = orders.getValue().iterator();
       while (ordersItr.hasNext()) {
         Order order = ordersItr.next();
+        if(order.senderCompId.equals(incomingOrder.senderCompId)) {
+          return;
+        }
         int qtyTransact =
             Math.min(
                 (incomingOrder.quantity - incomingOrder.filledQuantity),
@@ -173,5 +176,70 @@ public class OrderBook {
         results.add(incomingOrderResult);
       }
     }
+  }
+
+  List<Result> modifyOrder(Order order) {
+    List<Result> results = new ArrayList<>();
+    Iterator<Map.Entry<Long, LinkedList<Order>>> multiOrdersItr = this.buy.entrySet().iterator();
+    while(multiOrdersItr.hasNext()) {
+      Map.Entry<Long, LinkedList<Order>> entry = multiOrdersItr.next();
+      Iterator<Order> ordersItr = entry.getValue().iterator();
+      while(ordersItr.hasNext()) {
+        Order o = ordersItr.next();
+        if(o.clOrdId == order.clOrdId) {
+          o.quantity = order.quantity;
+          // TODO make exec report
+          break;
+        }
+      }
+    }
+    // TODO improve performance
+    multiOrdersItr = this.sell.entrySet().iterator();
+    while(multiOrdersItr.hasNext()) {
+      Map.Entry<Long, LinkedList<Order>> entry = multiOrdersItr.next();
+      Iterator<Order> ordersItr = entry.getValue().iterator();
+      while(ordersItr.hasNext()) {
+        Order o = ordersItr.next();
+        if(o.clOrdId == order.clOrdId) {
+          o.quantity = order.quantity;
+          // TODO make exec report
+          break;
+        }
+      }
+    }
+    return results;
+  }
+
+  List<Result> cancelOrder(Order order) {
+    List<Result> results = new ArrayList<>();
+    // TODO improve performance
+    Iterator<Map.Entry<Long, LinkedList<Order>>> multiOrdersItr = this.buy.entrySet().iterator();
+    while(multiOrdersItr.hasNext()) {
+      Map.Entry<Long, LinkedList<Order>> entry = multiOrdersItr.next();
+      Iterator<Order> ordersItr = entry.getValue().iterator();
+      while(ordersItr.hasNext()) {
+        Order o = ordersItr.next();
+        if(o.clOrdId == order.clOrdId) {
+          ordersItr.remove();
+          // TODO make exec report
+          break;
+        }
+      }
+    }
+    // TODO improve performance
+    multiOrdersItr = this.sell.entrySet().iterator();
+    while(multiOrdersItr.hasNext()) {
+      Map.Entry<Long, LinkedList<Order>> entry = multiOrdersItr.next();
+      Iterator<Order> ordersItr = entry.getValue().iterator();
+      while(ordersItr.hasNext()) {
+        Order o = ordersItr.next();
+        if(o.clOrdId == order.clOrdId) {
+          ordersItr.remove();
+          // TODO make exec report
+          break;
+        }
+      }
+    }
+    return results;
   }
 }

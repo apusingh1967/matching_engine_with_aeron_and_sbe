@@ -138,10 +138,11 @@ public class Main {
                     processNewOrderSingle(buffer, offset, messageHeaderDecoder);
                     break;
                   case OrderCancelReplaceRequestDecoder.TEMPLATE_ID:
-                    // TODO order modify
+                    // Only quantity reduction allowed in my exchange so far
+                    processOrderCancelReplace(buffer, offset, messageHeaderDecoder);
                     break;
                   case OrderCancelRequestDecoder.TEMPLATE_ID:
-                    // TODO order cancel
+                    processOrderCancel(buffer, offset, messageHeaderDecoder);
                     break;
                   case StopSessionDecoder.TEMPLATE_ID:
                     // admin message to shut down ME
@@ -170,21 +171,7 @@ public class Main {
   private void processNewOrderSingle(
       DirectBuffer buffer, int offset, MessageHeaderDecoder headerDecoder) {
     newOrderSingleDecoder.wrapAndApplyHeader(buffer, offset, headerDecoder);
-
-    String senderCompID = newOrderSingleDecoder.senderCompID();
-    long clOrdID = newOrderSingleDecoder.clOrdID();
-    Side side = newOrderSingleDecoder.side();
-    int qty = newOrderSingleDecoder.orderQty();
-    PriceDecoder price = newOrderSingleDecoder.price();
-    long timestamp = newOrderSingleDecoder.timestamp();
-    LOG.info(
-        "Received order: sender={}, ID={}, Side={}, Qty={}, Price={}, TS: {}",
-        senderCompID,
-        clOrdID,
-        side,
-        qty,
-        price,
-        timestamp);
+    log_order("New Order");
 
     if (newOrderSingleDecoder.orderType().equals(OrderType.Limit)
         || (newOrderSingleDecoder.orderType().equals(OrderType.Market))) {
@@ -192,19 +179,61 @@ public class Main {
           new Order(
               this.orderIdGenerator.nextId(),
               newOrderSingleDecoder.clOrdID(),
-              senderCompID,
+                  newOrderSingleDecoder.senderCompID(),
               newOrderSingleDecoder.symbol(),
               newOrderSingleDecoder.price().mantissa(),
               newOrderSingleDecoder.orderQty(),
               newOrderSingleDecoder.side(),
               newOrderSingleDecoder.orderType(),
               newOrderSingleDecoder.timestamp());
-      List<Result> results = matchingEngine.match(order);
+      List<Result> results = matchingEngine.matchNewOrder(order);
       for (Result result : results) {
         sendExecutionReport(result);
       }
     } else {
       LOG.warn("Order type not supported: " + newOrderSingleDecoder.orderType());
+    }
+  }
+
+  private void processOrderCancelReplace(DirectBuffer buffer, int offset, MessageHeaderDecoder messageHeaderDecoder) {
+    orderCancelReplaceRequestDecoder.wrapAndApplyHeader(buffer, offset, messageHeaderDecoder);
+    log_order("Order Cancel Replace");
+
+    Order order =
+            new Order(
+                    this.orderIdGenerator.nextId(),
+                    orderCancelReplaceRequestDecoder.clOrdID(),
+                    orderCancelReplaceRequestDecoder.senderCompID(),
+                    orderCancelReplaceRequestDecoder.symbol(),
+                    orderCancelReplaceRequestDecoder.price().mantissa(),
+                    orderCancelReplaceRequestDecoder.orderQty(),
+                    Side.NULL_VAL,
+                    OrderType.NULL_VAL,
+                    orderCancelReplaceRequestDecoder.timestamp());
+    List<Result> results = matchingEngine.modifyOrder(order);
+    for (Result result : results) {
+      sendExecutionReport(result);
+    }
+  }
+
+  private void processOrderCancel(DirectBuffer buffer, int offset, MessageHeaderDecoder messageHeaderDecoder) {
+    orderCancelReplaceRequestDecoder.wrapAndApplyHeader(buffer, offset, messageHeaderDecoder);
+    log_order("Cancel Order");
+
+    Order order =
+            new Order(
+                    this.orderIdGenerator.nextId(),
+                    orderCancelReplaceRequestDecoder.clOrdID(),
+                    orderCancelReplaceRequestDecoder.senderCompID(),
+                    orderCancelReplaceRequestDecoder.symbol(),
+                    orderCancelReplaceRequestDecoder.price().mantissa(),
+                    orderCancelReplaceRequestDecoder.orderQty(),
+                    Side.NULL_VAL,
+                    OrderType.NULL_VAL,
+                    newOrderSingleDecoder.timestamp());
+    List<Result> results = matchingEngine.cancelOrder(order);
+    for (Result result : results) {
+      sendExecutionReport(result);
     }
   }
 
@@ -251,5 +280,23 @@ public class Main {
         LOG.info("Message sent at position " + newStreamPosition);
       }
     } while (newStreamPosition <= 0);
+  }
+
+  private void log_order(String token) {
+    String senderCompID = newOrderSingleDecoder.senderCompID();
+    long clOrdID = newOrderSingleDecoder.clOrdID();
+    Side side = newOrderSingleDecoder.side();
+    int qty = newOrderSingleDecoder.orderQty();
+    PriceDecoder price = newOrderSingleDecoder.price();
+    long timestamp = newOrderSingleDecoder.timestamp();
+    LOG.info(
+            "Received {}: sender={}, ID={}, Side={}, Qty={}, Price={}, TS: {}",
+            token,
+            senderCompID,
+            clOrdID,
+            side,
+            qty,
+            price,
+            timestamp);
   }
 }

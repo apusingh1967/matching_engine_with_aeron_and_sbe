@@ -61,7 +61,7 @@ public class IntegrationTests {
     // or udp if sending to another machine e.g. - "aeron:udp?endpoint=localhost:40123"
 
     int offset = 0;
-    // this is redundant!
+    // this is redundant! Use wrapAndApplyHeader
     //        headerEncoder
     //            .wrap(buffer, offset)
     //            .blockLength(orderEncoder.sbeBlockLength())

@@ -53,6 +53,7 @@ public class GroupsDemoUsingMarketDepthTests {
     bookLevels.bookType(MDEntryType.MID);
     entries = bookLevels.entriesCount(1);
     add_entry(entries, 1000, 1500);
+    // one entry for mid
 
     // ---- third book level, offers
     bookLevels.next();
