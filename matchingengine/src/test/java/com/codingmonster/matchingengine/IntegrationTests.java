@@ -74,14 +74,15 @@ public class IntegrationTests {
     orderEncoder
         // shortcut for adding header data and moving offset
         .wrapAndApplyHeader(buffer, offset, headerEncoder)
-        .senderCompID("trader1")
-        .clOrdID(12345)
+        .clOrdID(54321)
         .side(Side.Buy) // e.g., Buy
-        .orderQty(100)
+        .orderQty(200)
         .orderType(OrderType.Market);
     // exponent two decimal for equity
     orderEncoder.price().exponent((byte) 2).mantissa(22345);
-    int length = MessageHeaderEncoder.ENCODED_LENGTH + orderEncoder.encodedLength();
+    orderEncoder.senderCompID("trader1")
+            .symbol("IBM");
+    int length = headerEncoder.encodedLength() + orderEncoder.encodedLength();
 
     // Send the message over Aeron
     LOG.info("Publishing to: " + publication.toString());

@@ -171,7 +171,7 @@ public class Main {
   private void processNewOrderSingle(
       DirectBuffer buffer, int offset, MessageHeaderDecoder headerDecoder) {
     newOrderSingleDecoder.wrapAndApplyHeader(buffer, offset, headerDecoder);
-    log_order("New Order");
+  //  log_order("New Order");
 
     if (newOrderSingleDecoder.orderType().equals(OrderType.Limit)
         || (newOrderSingleDecoder.orderType().equals(OrderType.Market))) {
@@ -179,7 +179,7 @@ public class Main {
           new Order(
               this.orderIdGenerator.nextId(),
               newOrderSingleDecoder.clOrdID(),
-                  newOrderSingleDecoder.senderCompID(),
+              newOrderSingleDecoder.senderCompID(),
               newOrderSingleDecoder.symbol(),
               newOrderSingleDecoder.price().mantissa(),
               newOrderSingleDecoder.orderQty(),
@@ -195,42 +195,44 @@ public class Main {
     }
   }
 
-  private void processOrderCancelReplace(DirectBuffer buffer, int offset, MessageHeaderDecoder messageHeaderDecoder) {
+  private void processOrderCancelReplace(
+      DirectBuffer buffer, int offset, MessageHeaderDecoder messageHeaderDecoder) {
     orderCancelReplaceRequestDecoder.wrapAndApplyHeader(buffer, offset, messageHeaderDecoder);
     log_order("Order Cancel Replace");
 
     Order order =
-            new Order(
-                    this.orderIdGenerator.nextId(),
-                    orderCancelReplaceRequestDecoder.clOrdID(),
-                    orderCancelReplaceRequestDecoder.senderCompID(),
-                    orderCancelReplaceRequestDecoder.symbol(),
-                    orderCancelReplaceRequestDecoder.price().mantissa(),
-                    orderCancelReplaceRequestDecoder.orderQty(),
-                    Side.NULL_VAL,
-                    OrderType.NULL_VAL,
-                    orderCancelReplaceRequestDecoder.timestamp());
+        new Order(
+            this.orderIdGenerator.nextId(),
+            orderCancelReplaceRequestDecoder.clOrdID(),
+            orderCancelReplaceRequestDecoder.senderCompID(),
+            orderCancelReplaceRequestDecoder.symbol(),
+            orderCancelReplaceRequestDecoder.price().mantissa(),
+            orderCancelReplaceRequestDecoder.orderQty(),
+            Side.NULL_VAL,
+            OrderType.NULL_VAL,
+            orderCancelReplaceRequestDecoder.timestamp());
     List<Result> results = matchingEngine.modifyOrder(order);
     for (Result result : results) {
       sendExecutionReport(result);
     }
   }
 
-  private void processOrderCancel(DirectBuffer buffer, int offset, MessageHeaderDecoder messageHeaderDecoder) {
+  private void processOrderCancel(
+      DirectBuffer buffer, int offset, MessageHeaderDecoder messageHeaderDecoder) {
     orderCancelReplaceRequestDecoder.wrapAndApplyHeader(buffer, offset, messageHeaderDecoder);
     log_order("Cancel Order");
 
     Order order =
-            new Order(
-                    this.orderIdGenerator.nextId(),
-                    orderCancelReplaceRequestDecoder.clOrdID(),
-                    orderCancelReplaceRequestDecoder.senderCompID(),
-                    orderCancelReplaceRequestDecoder.symbol(),
-                    orderCancelReplaceRequestDecoder.price().mantissa(),
-                    orderCancelReplaceRequestDecoder.orderQty(),
-                    Side.NULL_VAL,
-                    OrderType.NULL_VAL,
-                    newOrderSingleDecoder.timestamp());
+        new Order(
+            this.orderIdGenerator.nextId(),
+            orderCancelReplaceRequestDecoder.clOrdID(),
+            orderCancelReplaceRequestDecoder.senderCompID(),
+            orderCancelReplaceRequestDecoder.symbol(),
+            orderCancelReplaceRequestDecoder.price().mantissa(),
+            orderCancelReplaceRequestDecoder.orderQty(),
+            Side.NULL_VAL,
+            OrderType.NULL_VAL,
+            newOrderSingleDecoder.timestamp());
     List<Result> results = matchingEngine.cancelOrder(order);
     for (Result result : results) {
       sendExecutionReport(result);
@@ -290,13 +292,13 @@ public class Main {
     PriceDecoder price = newOrderSingleDecoder.price();
     long timestamp = newOrderSingleDecoder.timestamp();
     LOG.info(
-            "Received {}: sender={}, ID={}, Side={}, Qty={}, Price={}, TS: {}",
-            token,
-            senderCompID,
-            clOrdID,
-            side,
-            qty,
-            price,
-            timestamp);
+        "Received {}: sender={}, ID={}, Side={}, Qty={}, Price={}, TS: {}",
+        token,
+        senderCompID,
+        clOrdID,
+        side,
+        qty,
+        price,
+        timestamp);
   }
 }

@@ -92,7 +92,7 @@ public class OrderBook {
       Iterator<Order> ordersItr = orders.getValue().iterator();
       while (ordersItr.hasNext()) {
         Order order = ordersItr.next();
-        if(order.senderCompId.equals(incomingOrder.senderCompId)) {
+        if (order.senderCompId.equals(incomingOrder.senderCompId)) {
           return;
         }
         int qtyTransact =
@@ -178,68 +178,86 @@ public class OrderBook {
     }
   }
 
-  List<Result> modifyOrder(Order order) {
+  List<Result> modifyOrder(Order incomingOrder) {
     List<Result> results = new ArrayList<>();
-    Iterator<Map.Entry<Long, LinkedList<Order>>> multiOrdersItr = this.buy.entrySet().iterator();
-    while(multiOrdersItr.hasNext()) {
-      Map.Entry<Long, LinkedList<Order>> entry = multiOrdersItr.next();
-      Iterator<Order> ordersItr = entry.getValue().iterator();
-      while(ordersItr.hasNext()) {
-        Order o = ordersItr.next();
-        if(o.clOrdId == order.clOrdId) {
-          o.quantity = order.quantity;
-          // TODO make exec report
-          break;
-        }
-      }
-    }
-    // TODO improve performance
-    multiOrdersItr = this.sell.entrySet().iterator();
-    while(multiOrdersItr.hasNext()) {
-      Map.Entry<Long, LinkedList<Order>> entry = multiOrdersItr.next();
-      Iterator<Order> ordersItr = entry.getValue().iterator();
-      while(ordersItr.hasNext()) {
-        Order o = ordersItr.next();
-        if(o.clOrdId == order.clOrdId) {
-          o.quantity = order.quantity;
-          // TODO make exec report
-          break;
-        }
-      }
-    }
+    modifyOrder(incomingOrder, this.buy, results);
+    modifyOrder(incomingOrder, this.sell, results);
     return results;
+  }
+
+  private static void modifyOrder(
+      Order incomingOrder,
+      NavigableMap<Long, LinkedList<Order>> orderOrders,
+      List<Result> results) {
+    Iterator<Map.Entry<Long, LinkedList<Order>>> multiOrdersItr = orderOrders.entrySet().iterator();
+    while (multiOrdersItr.hasNext()) {
+      Map.Entry<Long, LinkedList<Order>> entry = multiOrdersItr.next();
+      Iterator<Order> ordersItr = entry.getValue().iterator();
+      while (ordersItr.hasNext()) {
+        Order order = ordersItr.next();
+        if (order.clOrdId == incomingOrder.clOrdId) {
+          order.quantity = incomingOrder.quantity;
+          Result result =
+              new Result(
+                  incomingOrder.clOrdId,
+                  incomingOrder.senderCompId,
+                  (incomingOrder.orderId << 16) | (2 & 0xFFFF),
+                  Side.NULL_VAL,
+                  ExecType.NULL_VAL, // should be modify or something
+                  OrdStatus.NULL_VAL, // should be modify?
+                  order.filledQuantity, // lastQty: filled in this execution
+                  incomingOrder.quantity
+                      - incomingOrder.filledQuantity, // leavesQty: remaining qty after execution
+                  order.filledQuantity, // total filled so far
+                  order.price,
+                  -1, // will do maybe some other time
+                  incomingOrder.timestamp);
+          results.add(result);
+          break;
+        }
+      }
+    }
   }
 
   List<Result> cancelOrder(Order order) {
     List<Result> results = new ArrayList<>();
-    // TODO improve performance
-    Iterator<Map.Entry<Long, LinkedList<Order>>> multiOrdersItr = this.buy.entrySet().iterator();
-    while(multiOrdersItr.hasNext()) {
-      Map.Entry<Long, LinkedList<Order>> entry = multiOrdersItr.next();
-      Iterator<Order> ordersItr = entry.getValue().iterator();
-      while(ordersItr.hasNext()) {
-        Order o = ordersItr.next();
-        if(o.clOrdId == order.clOrdId) {
-          ordersItr.remove();
-          // TODO make exec report
-          break;
-        }
-      }
-    }
-    // TODO improve performance
-    multiOrdersItr = this.sell.entrySet().iterator();
-    while(multiOrdersItr.hasNext()) {
-      Map.Entry<Long, LinkedList<Order>> entry = multiOrdersItr.next();
-      Iterator<Order> ordersItr = entry.getValue().iterator();
-      while(ordersItr.hasNext()) {
-        Order o = ordersItr.next();
-        if(o.clOrdId == order.clOrdId) {
-          ordersItr.remove();
-          // TODO make exec report
-          break;
-        }
-      }
-    }
+    cancelOrder(order, this.buy, results);
+    cancelOrder(order, this.sell, results);
     return results;
+  }
+
+  private void cancelOrder(
+      Order incomingOrder,
+      NavigableMap<Long, LinkedList<Order>> orderOrders,
+      List<Result> results) {
+    // TODO improve performance
+    Iterator<Map.Entry<Long, LinkedList<Order>>> multiOrdersItr = orderOrders.entrySet().iterator();
+    while (multiOrdersItr.hasNext()) {
+      Map.Entry<Long, LinkedList<Order>> entry = multiOrdersItr.next();
+      Iterator<Order> ordersItr = entry.getValue().iterator();
+      while (ordersItr.hasNext()) {
+        Order o = ordersItr.next();
+        if (o.clOrdId == incomingOrder.clOrdId) {
+          ordersItr.remove();
+          Result result =
+              new Result(
+                  incomingOrder.clOrdId,
+                  incomingOrder.senderCompId,
+                  (incomingOrder.orderId << 16) | (2 & 0xFFFF),
+                  Side.NULL_VAL,
+                  ExecType.NULL_VAL, // should be cancel?
+                  OrdStatus.Canceled,
+                  incomingOrder.filledQuantity, // lastQty: filled in this execution
+                  incomingOrder.quantity
+                      - incomingOrder.filledQuantity, // leavesQty: remaining qty after execution
+                  incomingOrder.filledQuantity, // total filled so far
+                  incomingOrder.price,
+                  -1, // will do maybe some other time
+                  incomingOrder.timestamp);
+          results.add(result);
+          break;
+        }
+      }
+    }
   }
 }

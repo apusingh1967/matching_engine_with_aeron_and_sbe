@@ -64,7 +64,7 @@ public class GroupsDemoUsingMarketDepthTests {
     add_entry(entries, 1010, 1000);
     // only two entries allowed!
 
-    // One could batch multiple messages in the byteBuffer for efficiency
+    // One could batch multiple messages in the byteBuffer for efficiency, e.g.
     //  encode message 1
     //   offset += mde.encodedLength();
     //   mde.wrap(buffer, offset);
